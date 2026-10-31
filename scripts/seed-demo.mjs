@@ -49,5 +49,5 @@ await b('get_thread_context', { threadId: thread.id });
 await b('save_memory', { threadId: thread.id, type: 'PROJECT_STATE', content: 'COD reconciliation screen drafted; totals check against cod_ledger at shift end. Next: offline photo upload queue.', tags: ['cod'] });
 await b('save_memory', { threadId: thread.id, type: 'DECISION', content: 'Route optimiser is out of MVP scope; dispatchers assign parcels manually until v2.', tags: ['scope'] });
 
-writeFileSync('DEMO_ACCOUNT.txt', `Engram demo account (do not commit)\nURL: ${BASE}\nEmail: ${email}\nPassword: ${password}\nThread: Atlas MVP build (${thread.id})\nLibraries: Project Atlas (${atlas.id}), Engineering handbook (${handbook.id})\n\nMCP keys (shown once in the UI; saved here for the demo recording):\nClaude Code: ${cc.token}\nCursor: ${cur.token}\n\nCreated ${new Date().toISOString()}\n`);
+writeFileSync('DEMO_ACCOUNT.txt', `Engram demo account (do not commit)\nURL: ${BASE}\nEmail: ${email}\nPassword: ${password}\nThread: Atlas MVP build (${thread.id})\nLibraries: Project Atlas (${atlas.id}), Engineering handbook (${handbook.id})\n\nMCP keys (shown once in the UI; saved here for the demo recording):\nLaptop agent (key A): ${cc.token}\nResearch agent (key B): ${cur.token}\n\nCreated ${new Date().toISOString()}\n`);
 console.log('seeded', email, 'thread', thread.id);
