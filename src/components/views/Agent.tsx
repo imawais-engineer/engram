@@ -65,7 +65,7 @@ function AgentEditor({ a, flash, onAgent }: { a: Full; flash: string; onAgent: (
           action={<><Btn variant="outline" disabled={busy} onClick={toggle}>{a.status === "active" ? "Deactivate" : "Activate"}</Btn><Btn variant="danger" onClick={remove}>Delete</Btn></>} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           <Card className="p-5">
             <Field label="Name"><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></Field>
             <div className="grid gap-x-4 md:grid-cols-2">

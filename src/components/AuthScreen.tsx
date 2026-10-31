@@ -8,9 +8,9 @@ const anchors: Record<string, string> = { Overview: "#top", Libraries: "#feature
 
 const CLIENTS = [
   { name: "Claude Code", ini: "CC", ver: "v2.1.316", what: "Remote HTTP server added with a bearer header. mcp list reports Connected." },
-  { name: "MCP Inspector", ini: "MI", ver: "CLI 2.13.0", what: "Listed tools, resources and prompts; called search_library on production." },
-  { name: "TypeScript SDK", ini: "TS", ver: "sdk 1.32.2", what: "All 10 tools, scopes, revocation and cross-user isolation. 71 checks." },
-  { name: "Python SDK", ini: "PY", ver: "mcp 1.30.0", what: "Initialize, save_memory, get_thread_context, resources and prompts." },
+  { name: "MCP Inspector", ini: "MI", ver: "CLI 2.13.0", what: "Listed tools and called get_agent_context on production." },
+  { name: "TypeScript SDK", ini: "TS", ver: "sdk 1.32.2", what: "All 32 tools, skills, agents, scopes, read-only keys and cross-user isolation. 149 checks." },
+  { name: "Python SDK", ini: "PY", ver: "mcp 1.30.0", what: "save_memory, get_thread_context, list_skills and get_agent_context on real workspace data." },
 ];
 
 const ROWS = [

@@ -1,41 +1,53 @@
 # Engram: 2-minute demo script
 
-**Title:** One memory. Two AI tools. Zero context loss.
+**Title:** Your AI subscription, supercharged. One memory. Every skill. Every AI.
 
-Before recording, run `scripts/seed-demo.mjs` against production (or use the account in `DEMO_ACCOUNT.txt`), and keep two
-terminals ready, each with a different key from that file. Engram has been tested with Claude Code, MCP Inspector and the
-TypeScript and Python MCP SDKs, so use two of those.
+**Setup before recording**
+- Seed the demo: `BASE=https://engram-ai.appwrite.network DEMO_EMAIL=demo@engram-demo.app node scripts/seed-demo.mjs`.
+  It writes `DEMO_ACCOUNT.txt` (gitignored) with the login, two keys, the thread id and the agent id.
+- **Client 1, Claude Code** (signed in), with key A:
+  `claude mcp add --transport http engram https://engram-ai.appwrite.network/mcp --header "Authorization: Bearer <key A>"`.
+  Check with `claude mcp list`, which should show ✔ Connected.
+- **Client 2, the Python MCP SDK client**, with key B:
+  `TOKEN=<key B> THREAD=<thread id> AGENT=<agent id> python3 scripts/mcp-python-client.py`.
+  Note: that script also saves one test DECISION to the thread.
 
 **0:00–0:15 · Problem** (landing page)
-"Every AI tool forgets. What you decided with one assistant is gone when you open another. Engram is one memory layer you own,
-built on Appwrite, that any MCP client you connect can read and write."
+"Every AI tool forgets. You re-explain your project, your rules and your style in every chat. Engram is one memory you own,
+built on Appwrite, that every MCP client you connect reads and writes. Less repetition, more productivity."
 
-**0:15–0:40 · Libraries** (Libraries → Project Atlas)
-Drop the Atlas architecture PDF. "It goes to Appwrite Storage. The text is chunked, embedded with Appwrite Embeddings, and
-stored in TablesDB." Search *"what happens when riders lose network?"* and point at the cited passage.
+**0:15–0:35 · Memory** (Libraries → Project Atlas, then Threads → Atlas MVP build)
+Search *"what happens when riders lose network?"* and point at the cited passage. On the thread: "Decisions, facts and tasks,
+written by two different keys: *via Laptop agent*, *via Research agent*."
 
-**0:40–1:00 · Threads** (Threads → Atlas MVP build)
-"A thread holds a project's instructions, summary and typed memories: decisions, facts, tasks. Note the badges: *via Laptop agent*,
-*via Research agent*. Two different keys wrote these over MCP." (The seed script wrote them. Say "keys", not specific apps.)
+**0:35–0:55 · Skills** (Skills → Atlas code review)
+"A skill is a reusable instruction pack. This one is published at v2. Here's the history, and I can restore v1." Point at
+the draft skill: "Drafts never reach an agent."
 
-**1:00–1:35 · Two tools, one memory** (terminals)
-Tool A (Claude Code with key 1): *"Search my Atlas library for the SMS gateway question and save a DECISION: use gateway X, batch hourly."*
-(This needs a signed-in Claude Code session. Without one, run `save_memory` through MCP Inspector CLI.)
-Tool B (Inspector or the Python client with key 2): `get_thread_context` shows the new DECISION, saved through a different key.
-Refresh the thread page in the dashboard, where it appears live.
+**0:55–1:15 · Agent config** (Agents → Atlas reviewer)
+"An agent bundles identity, instructions, skills and the libraries it may read." Type *review the offline status updates* and
+click **Preview**: "This is exactly what an AI receives: the published skill, the thread summary, cited passages, inside a size
+budget. Stored content is marked as data, not instructions."
 
-**1:35–1:55 · Control** (Connect)
-"Each tool gets its own key, scoped to specific libraries and threads, with an expiry. Only the SHA-256 hash is stored. The
-activity log shows every tool call." Revoke key 2, then run it again to show the 401.
+**1:15–1:45 · Two clients, one memory**
+- Claude Code: *"Load my Engram agent Atlas reviewer for the Atlas MVP build thread, then save a DECISION: use gateway X for SMS, batched hourly."*
+  It calls `get_agent_context`, then `save_memory`.
+- Python client (key B): run the script. It prints the agent context it received (same agent, same skills) and
+  `decision visible: True`. Refresh the thread page: the new DECISION shows *via Laptop agent*.
+
+**1:45–1:55 · Control** (Connect)
+"Each tool has its own key, scoped to libraries and threads, read-only or read-write, with an expiry. Only a peppered HMAC hash is
+stored, browser Origins are checked, and every tool call is logged." Revoke key B, run the Python client again: 401.
 
 **1:55–2:00 · Close**
-"Engram: one memory for every AI. Built on Appwrite Auth, TablesDB, Storage and Embeddings."
+"Engram: one memory, every skill, every AI. Built on Appwrite Auth, TablesDB, Storage, Embeddings and Sites."
 
 ---
 
 **Submission blurb:**
-Engram is a portable memory layer for AI tools, built on Appwrite. Libraries hold your documents, which are chunked and
-embedded with Appwrite Embeddings and stored in TablesDB. Threads hold typed project memories such as decisions, facts and
-tasks. One stateless MCP endpoint, protected by scoped and revocable bearer keys, lets each AI client search your context and
-save to it, so a decision made in one tool is available in the next. It is built on Appwrite Auth, TablesDB (7 tables,
-owner-only rows), Storage and Embeddings, and the vector store sits behind an interface so VectorsDB can replace it on a paid plan.
+Engram is a memory layer for the AI tools you already pay for, built on Appwrite. Libraries hold your documents, chunked and
+embedded with Appwrite Embeddings and stored in TablesDB. Threads hold typed project memories. Skills are versioned instruction packs,
+and Agents bundle identity, instructions, skills and allowed libraries. One stateless MCP endpoint exposes 32 tools, including
+`get_agent_context`, which composes an agent's full setup within a character budget and never goes beyond the calling key's scope.
+It is protected by scoped, revocable, HMAC-hashed bearer keys. Built on Appwrite Auth, TablesDB (12 tables, owner-only rows),
+Storage, Embeddings and Sites.

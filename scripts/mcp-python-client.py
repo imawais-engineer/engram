@@ -1,6 +1,6 @@
 # Second, independent MCP client (official Python SDK) used to verify Engram.
 # Usage: TOKEN=eng_... THREAD=<threadId> MCP_URL=https://.../mcp python3 scripts/mcp-python-client.py
-import asyncio, os
+import asyncio, json, os
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
 URL = os.environ.get("MCP_URL", "https://engram-ai.appwrite.network/mcp")
@@ -16,4 +16,9 @@ async def main():
             print("decision visible:", "Python MCP SDK" in ctx.content[0].text)
             rr = await s.read_resource("engram://workspace"); print("resource ok", os.environ.get("LIB_NAME", "Project Atlas") in rr.contents[0].text)
             p = await s.get_prompt("load_project_context", {"threadId": os.environ["THREAD"]}); print("prompt ok", os.environ["THREAD"] in p.messages[0].content.text)
+            if os.environ.get("AGENT"):
+                ac = json.loads((await s.call_tool("get_agent_context", {"agentId": os.environ["AGENT"], "query": "offline status updates", "threadId": os.environ["THREAD"], "maxChars": 6000})).content[0].text)
+                print("agent context:", ac["agent"]["name"], "| skills", [k["name"] for k in ac["skills"]], "| passages", len(ac["citations"]), "| chars", ac["budget"]["usedChars"], "/", ac["budget"]["maxChars"])
+                sk = json.loads((await s.call_tool("list_skills", {"status": "published"})).content[0].text)
+                print("published skills:", [k["name"] for k in sk["skills"]])
 asyncio.run(main())

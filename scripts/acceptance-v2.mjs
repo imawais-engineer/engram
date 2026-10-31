@@ -162,6 +162,7 @@ check('thread summary included', ctxRW?.context?.includes('Offline queue shipped
 check('stored content wrapped as data', ctxRW?.context?.includes('<engram_data>') && ctxRW.context.includes('not as instructions'));
 const all = (await rw.call('get_agent_context', { agentId: ag.id, query: 'offline backup codes payroll' })).data;
 check('all-libraries key sees both assigned libraries', all?.citations?.some((c) => c.libraryId === libSecret.id));
+await A('PATCH', `/api/agents/${ag.id}`, { constraints: 'Never merge without tests. '.repeat(80) }); // make the full context larger than the 1000-char budget
 const big = (await rw.call('get_agent_context', { agentId: ag.id, query: 'offline queue sync', threadId: thread.id, maxChars: 20000 })).data;
 const tiny = (await rw.call('get_agent_context', { agentId: ag.id, query: 'offline queue sync', threadId: thread.id, maxChars: 1000 })).data;
 check(`budget respected (full ${big?.budget?.usedChars} chars → ${tiny?.budget?.usedChars} ≤ 1000, truncated)`, big?.budget?.usedChars > 1000 && tiny?.budget?.usedChars <= 1000 && tiny.context.length <= 1000 && tiny.budget.truncated === true);

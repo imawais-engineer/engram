@@ -49,7 +49,7 @@ function SkillEditor({ id, s, flash, onSkill }: { id: string; s: Skill; flash: s
           action={<><Btn variant={s.status === "published" ? "outline" : "primary"} disabled={!!busy} onClick={toggle}>{s.status === "published" ? "Unpublish" : "Publish"}</Btn><Btn variant="outline" onClick={duplicate}>Duplicate</Btn><Btn variant="danger" onClick={remove}>Delete</Btn></>} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <Card className="p-5">
+        <Card className="min-w-0 p-5">
           <Field label="Name"><input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
           <div className="grid gap-x-4 md:grid-cols-2">
             <Field label="Description"><input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field>
