@@ -14,6 +14,6 @@ async def main():
             print("save_memory isError", res.isError)
             ctx = await s.call_tool("get_thread_context", {"threadId": os.environ["THREAD"]})
             print("decision visible:", "Python MCP SDK" in ctx.content[0].text)
-            rr = await s.read_resource("engram://workspace"); print("resource ok", "Compat lib" in rr.contents[0].text)
+            rr = await s.read_resource("engram://workspace"); print("resource ok", os.environ.get("LIB_NAME", "Project Atlas") in rr.contents[0].text)
             p = await s.get_prompt("load_project_context", {"threadId": os.environ["THREAD"]}); print("prompt ok", os.environ["THREAD"] in p.messages[0].content.text)
 asyncio.run(main())

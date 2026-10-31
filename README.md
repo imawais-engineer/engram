@@ -111,6 +111,10 @@ Embedding calls take about 0.5 s per chunk and fail on batches of 64 or more, so
 
 ### What was actually tested
 
+Production below means the Appwrite Sites deployment at https://engram-ai.appwrite.network (re-verified 31 Oct 2026:
+71/71 acceptance checks, Python SDK client, MCP Inspector CLI `tools/list`). The Claude Code row was verified against the
+earlier Vercel deployment of the same code.
+
 | Client | Version | What was verified |
 | --- | --- | --- |
 | MCP TypeScript SDK client (`scripts/acceptance.mjs`) | `@modelcontextprotocol/sdk` 1.32.2 | All 10 tools, resources, prompts, scope, revocation, cross-user isolation. 71 checks, local and production |
