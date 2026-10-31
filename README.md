@@ -7,6 +7,8 @@ NoteMind is a study-notes app for students. Write or paste lecture notes, then a
 finds your **JavaScript scope** note, even though neither note uses those words. Every note also shows its **related notes**,
 so revising one topic surfaces the connected ones.
 
+**Live demo:** https://notemind-nine.vercel.app
+
 Built solo for the **Appwrite Databases Hackathon** (Oct 19–31, 2026).
 
 ![Semantic search and related notes](docs/search.png)
