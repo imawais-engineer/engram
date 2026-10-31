@@ -3,8 +3,8 @@ import { useState } from "react";
 import Logo from "./Logo";
 import { Initials } from "./ui";
 
-const NAV = ["Overview", "Libraries", "Threads", "Connect"];
-const anchors: Record<string, string> = { Overview: "#top", Libraries: "#features", Threads: "#how", Connect: "#clients" };
+const NAV = ["Overview", "Libraries", "Threads", "Skills", "Agents", "Connect"];
+const anchors: Record<string, string> = { Overview: "#top", Libraries: "#features", Threads: "#how", Skills: "#features", Agents: "#features", Connect: "#clients" };
 
 const CLIENTS = [
   { name: "Claude Code", ini: "CC", ver: "v2.1.316", what: "Remote HTTP server added with a bearer header. mcp list reports Connected." },
@@ -14,18 +14,17 @@ const CLIENTS = [
 ];
 
 const ROWS = [
-  { k: "01 · Upload", v: "Drop PDFs, Markdown or text into a Library. Engram chunks and embeds them with Appwrite Embeddings (768-d)." },
-  { k: "02 · Remember", v: "Start a Thread per project. Decisions, facts and tasks are saved as typed memories, by you or your AI." },
-  { k: "03 · Connect", v: "Create a scoped Key. Your MCP client calls one endpoint, /mcp, with that bearer token." },
-  { k: "04 · Audit", v: "Every tool call is logged per key. Rotate or revoke a key without touching the others." },
+  { k: "01 · Remember", v: "Drop PDFs, Markdown or text into a Library, and keep a Thread per project. Decisions, facts and tasks are saved as typed memories, by you or your AI." },
+  { k: "02 · Teach", v: "Write Skills once: versioned instruction packs such as a review checklist or a writing style. Publish the ones agents should use." },
+  { k: "03 · Configure", v: "Save Agents: identity, instructions, skills and the libraries each may read. get_agent_context hands any AI the whole setup within a size budget." },
+  { k: "04 · Connect", v: "Create a scoped Key per AI tool. It calls one endpoint, /mcp, every call is logged, and you can revoke it without touching the others." },
 ];
 
 const CARDS = [
-  { t: "Library", d: "Your documents, searchable by meaning.", b: ["PDF, TXT and Markdown up to 10 MB", "Semantic search with citations", "Cascade delete of chunks and files"], cta: "Add a library" },
-  { t: "Thread", d: "Project memory that follows you between AI tools.", b: ["8 memory types: decisions, facts, tasks…", "Instructions every AI reads first", "Linked libraries for grounded answers"], cta: "Start a thread", hi: true },
-  { t: "Key", d: "One revocable token per AI tool.", b: ["Stored as a SHA-256 hash only", "Scope to libraries and threads, set expiry", "Read-only or read + write"], cta: "Create a key" },
+  { t: "Memory", d: "Libraries and threads every AI reads from.", b: ["PDF, TXT and Markdown, searchable by meaning", "Threads with typed memories and a summary", "Citations back to the source passage"], cta: "Add a library" },
+  { t: "Skills", d: "Reusable instructions, written once.", b: ["Draft and published states", "Full version history with restore", "Loaded into agents only when published"], cta: "Write a skill", hi: true },
+  { t: "Agents", d: "Saved setups any AI can step into.", b: ["Identity, instructions, style, constraints", "Assigned skills and libraries", "Access is capped by each key's scope"], cta: "Create an agent" },
 ];
-
 export default function AuthScreen() {
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [name, setName] = useState("");
@@ -73,14 +72,14 @@ export default function AuthScreen() {
         <section className="relative overflow-hidden">
           <div className="hero-glow" aria-hidden />
           <div className="relative mx-auto flex max-w-6xl flex-col items-center px-5 pb-20 pt-16 text-center md:pt-24">
-            <div className="mono text-lilac">MCP memory layer · Built on Appwrite · Free</div>
-            <h1 className="poster mt-6 max-w-[16ch] text-cream md:text-[48px]">One memory<br />for every <span className="text-pink">AI.</span></h1>
+            <div className="mono text-lilac">One memory. Every skill. Every AI.</div>
+            <h1 className="poster mt-6 max-w-[16ch] text-cream md:text-[48px]">Your AI<br />subscription,<br /><span className="text-pink">supercharged.</span></h1>
             <p className="body-s mt-6 max-w-md text-zinc-200">
-              Stop re-explaining your project to every assistant. Engram keeps your documents, decisions and context in one place, and every MCP client you connect reads and writes the same memory.
+              Less repetition. More productivity. Engram keeps your documents, decisions, skills and agent setups in one place, and every MCP client you connect reads and writes the same memory.
             </p>
             <div className="mt-10 flex w-full max-w-3xl flex-col items-stretch gap-3 md:flex-row md:items-center">
               <div className="grid flex-1 grid-cols-3 gap-2">
-                {[["10", "MCP tools"], ["768-d", "Embeddings"], ["4", "Clients tested"]].map(([v, l]) => (
+                {[["32", "MCP tools"], ["768-d", "Embeddings"], ["4", "Clients tested"]].map(([v, l]) => (
                   <div key={l} className="rounded-xl border border-lilac/30 bg-plum/60 px-3 py-3 text-left">
                     <div className="font-display text-[22px] font-bold leading-none tracking-[-0.035em] text-cream md:text-[26px]">{v}</div>
                     <div className="mono mt-2 text-lilac">{l}</div>
@@ -125,9 +124,9 @@ export default function AuthScreen() {
           <div className="grid gap-10 md:grid-cols-[1fr_1.4fr]">
             <div>
               <div className="mono text-lilac">How it works</div>
-              <h2 className="poster-sm mt-4 max-w-[16ch] text-cream">Three steps, one endpoint</h2>
+              <h2 className="poster-sm mt-4 max-w-[16ch] text-cream">One memory, one endpoint</h2>
               <div className="mt-6 flex flex-wrap gap-2">
-                {["Upload", "Remember", "Connect"].map((s, i) => (
+                {["Remember", "Teach", "Configure", "Connect"].map((s, i) => (
                   <span key={s} className="mono rounded-full border border-lilac/40 px-3 py-1.5 text-cream"><span className="text-pink">0{i + 1}</span> {s}</span>
                 ))}
               </div>
@@ -148,7 +147,7 @@ export default function AuthScreen() {
           <div className="grid gap-3 md:grid-cols-3">
             {CARDS.map((c) => (
               <div key={c.t} className={`flex flex-col rounded-xl p-6 ${c.hi ? "order-first bg-pink text-plum md:order-none" : "border border-lilac/25 bg-panel text-cream"}`}>
-                <div className={`mono ${c.hi ? "text-plum" : "text-lilac"}`}>{c.hi ? "Core · start here" : "Building block"}</div>
+                <div className={`mono ${c.hi ? "text-plum" : "text-lilac"}`}>{c.hi ? "New · reusable" : "Building block"}</div>
                 <h3 className="poster-sm mt-3">{c.t}</h3>
                 <p className={`body-s mt-2 ${c.hi ? "text-plum" : "text-zinc-300"}`}>{c.d}</p>
                 <ul className="body-s mt-4 space-y-1.5">
@@ -168,7 +167,7 @@ export default function AuthScreen() {
               <h2 className="poster-sm mt-4 max-w-[16ch] text-cream">Free to use</h2>
               <p className="body-s mt-4 max-w-md text-zinc-200">Engram runs on Appwrite Cloud&apos;s free plan: Auth, TablesDB, Storage and Embeddings. No card required. Rate limit: 60 MCP calls per minute per key.</p>
               <div className="mt-8 grid grid-cols-2 gap-2">
-                {[["MCP endpoint", "/mcp"], ["Transport", "Streamable HTTP"], ["Protocol", "2024-11 → 2025-11"], ["Auth", "Bearer eng_ keys"]].map(([k, v]) => (
+                {[["MCP endpoint", "/mcp"], ["Transport", "Streamable HTTP"], ["Protocol", "2024-11 → 2025-11"], ["Auth", "Bearer engram_ keys"]].map(([k, v]) => (
                   <div key={k} className="rounded-xl border border-lilac/25 bg-panel p-3">
                     <div className="mono text-lilac">{k}</div>
                     <div className="mt-1.5 text-[13px] font-semibold text-cream">{v}</div>

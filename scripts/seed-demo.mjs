@@ -1,4 +1,4 @@
-// Seeds a demo workspace for recording: libraries, a thread with memories saved by two AI-tool keys.
+// Seeds a demo workspace for recording: libraries, a thread with memories saved by two AI-tool keys, skills and an agent.
 // Usage: BASE=https://engram-ai.appwrite.network node scripts/seed-demo.mjs   (writes DEMO_ACCOUNT.txt, which is gitignored)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js';
@@ -49,5 +49,18 @@ await b('get_thread_context', { threadId: thread.id });
 await b('save_memory', { threadId: thread.id, type: 'PROJECT_STATE', content: 'COD reconciliation screen drafted; totals check against cod_ledger at shift end. Next: offline photo upload queue.', tags: ['cod'] });
 await b('save_memory', { threadId: thread.id, type: 'DECISION', content: 'Route optimiser is out of MVP scope; dispatchers assign parcels manually until v2.', tags: ['scope'] });
 
-writeFileSync('DEMO_ACCOUNT.txt', `Engram demo account (do not commit)\nURL: ${BASE}\nEmail: ${email}\nPassword: ${password}\nThread: Atlas MVP build (${thread.id})\nLibraries: Project Atlas (${atlas.id}), Engineering handbook (${handbook.id})\n\nMCP keys (shown once in the UI; saved here for the demo recording):\nLaptop agent (key A): ${cc.token}\nResearch agent (key B): ${cur.token}\n\nCreated ${new Date().toISOString()}\n`);
+// Skills (one published, one draft) and an agent that uses them.
+const review = (await call('POST', '/api/skills', { name: 'Atlas code review', category: 'engineering', tags: ['review'], description: 'How Atlas pull requests are reviewed',
+  instructions: '1. Run the tests first and report failures before anything else.\n2. Check every new API route for auth and per-user ownership.\n3. Flag scope creep against the MVP rules (no card payments, no route optimiser).\n4. Keep feedback to bullets, most important first.' })).skill;
+await call('PATCH', `/api/skills/${review.id}`, { instructions: '1. Run the tests first and report failures before anything else.\n2. Check every new API route for auth and per-user ownership.\n3. Flag scope creep against the MVP rules (no card payments, no route optimiser).\n4. Check offline behaviour: anything a rider does must survive a dropped connection.\n5. Keep feedback to bullets, most important first.', changeSummary: 'Add offline check' });
+await call('PATCH', `/api/skills/${review.id}`, { status: 'published' });
+const notes = (await call('POST', '/api/skills', { name: 'Release notes writer', category: 'writing', description: 'Turns merged PRs into user-facing notes', instructions: 'Group changes by user impact. Plain language, no internal ticket ids.' })).skill;
+const ag = (await a('create_agent_config', { name: 'Atlas reviewer', description: 'Reviews Atlas pull requests', identity: 'A senior TypeScript reviewer who knows the Atlas courier-tracking codebase.',
+  purpose: 'Review Atlas changes against the MVP scope and the engineering handbook.', systemInstructions: 'Be concise. Cite the library passage you rely on as [title #chunk]. Ask before suggesting new dependencies.',
+  responseStyle: 'Short bullets, most important first.', constraints: 'Never approve changes that add card payments or a route optimiser to the MVP.', preferredClient: 'Claude Code',
+  skillIds: [review.id], libraryIds: [atlas.id, handbook.id] }));
+const agent = JSON.parse(ag.content[0].text).agent;
+await b('get_agent_context', { agentId: agent.id, query: 'offline status updates', threadId: thread.id });
+
+writeFileSync('DEMO_ACCOUNT.txt', `Engram demo account (do not commit)\nURL: ${BASE}\nEmail: ${email}\nPassword: ${password}\nThread: Atlas MVP build (${thread.id})\nLibraries: Project Atlas (${atlas.id}), Engineering handbook (${handbook.id})\nAgent: Atlas reviewer (${agent.id})\nSkills: Atlas code review (${review.id}, published v2), Release notes writer (${notes.id}, draft)\n\nMCP keys (shown once in the UI; saved here for the demo recording):\nLaptop agent (key A): ${cc.token}\nResearch agent (key B): ${cur.token}\n\nCreated ${new Date().toISOString()}\n`);
 console.log('seeded', email, 'thread', thread.id);

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { api, Badge, Btn, Card, ErrorNote, PageHeader, Skeleton, Stat, timeAgo, useLoad } from "../ui";
 
 type O = {
-  counts: { libraries: number; documents: number; chunks: number; threads: number; memories: number; activeKeys: number };
+  counts: { libraries: number; documents: number; chunks: number; threads: number; memories: number; activeKeys: number; skills: number; publishedSkills: number; agents: number; activeAgents: number };
   recentThreads: { id: string; title: string; memoryCount: number; updatedAt: string }[];
   recentDocuments: { id: string; title: string; libraryId: string; status: string; createdAt: string }[];
   libraries: { id: string; name: string; icon: string }[];
@@ -36,10 +36,11 @@ export default function OverviewView() {
           <Btn small disabled={importing} onClick={async () => { setImporting(true); await api("/api/import-notes", { method: "POST" }); setImporting(false); legacy.reload(); reload(); }}>{importing ? "Importing…" : "Import notes"}</Btn>
         </Card>
       )}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Libraries" value={c.libraries} hint={`${c.documents} documents`} />
-        <Stat label="Indexed chunks" value={c.chunks} hint="768-dim vectors" />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+        <Stat label="Libraries" value={c.libraries} hint={`${c.documents} docs · ${c.chunks} chunks`} />
         <Stat label="Threads" value={c.threads} hint={`${c.memories} memories`} />
+        <Stat label="Skills" value={c.skills} hint={`${c.publishedSkills} published`} />
+        <Stat label="Agents" value={c.agents} hint={`${c.activeAgents} active`} />
         <Stat label="Active keys" value={c.activeKeys} hint="MCP connections" />
       </div>
 

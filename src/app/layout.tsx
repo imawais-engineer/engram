@@ -6,8 +6,8 @@ const grotesk = Space_Grotesk({ variable: "--font-grotesk", subsets: ["latin"], 
 const jbmono = JetBrains_Mono({ variable: "--font-jbmono", subsets: ["latin"], weight: ["400", "500", "700"] });
 
 export const metadata: Metadata = {
-  title: "Engram — one memory for every AI",
-  description: "Portable AI memory: libraries, threads and scoped MCP keys so your connected AI tools share one context. Built on Appwrite.",
+  title: "Engram — your AI subscription, supercharged",
+  description: "One memory. Every skill. Every AI. Libraries, threads, versioned skills and agent setups shared by every MCP client you connect. Built on Appwrite.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -144,9 +144,9 @@ export default function ConnectView() {
           <Card className="mt-6 p-5">
             <div className="mono-app mb-2 text-lilac">How it works</div>
             <ol className="list-decimal space-y-1.5 pl-5 text-sm text-zinc-400">
-              <li>Each key is a bearer token (<span className="font-mono text-zinc-300">eng_…</span>), scoped to chosen libraries and threads, with an expiry.</li>
+              <li>Each key is a bearer token (<span className="font-mono text-zinc-300">engram_…</span>), scoped to chosen libraries and threads, with an expiry. Only a peppered HMAC-SHA256 hash is stored. Older <span className="font-mono text-zinc-300">eng_…</span> keys keep working.</li>
               <li>Your AI tool calls <span className="font-mono text-zinc-300">/mcp</span> (MCP Streamable HTTP). Engram checks the key hash, scope, expiry and revocation on every request.</li>
-              <li>Tools: list_libraries, search_library, list_documents, get_document, list_threads, get_thread_context, save_memory, update_memory, search_memory, link_library.</li>
+              <li>32 tools across memory (libraries, threads, memories), skills (versioned instructions) and agents (get_agent_context). Also served at <span className="font-mono text-zinc-300">/api/mcp</span>.</li>
               <li>A memory saved through one key is immediately visible through every other key that can see that thread.</li>
             </ol>
           </Card>
