@@ -3,8 +3,8 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-brand: #fd366e;
-  --color-brand-2: #a855f7;
+  --color-brand: #7c5cff;
+  --color-brand-2: #22d3ee;
 }
 
 :root { color-scheme: dark; }
@@ -16,8 +16,8 @@ body {
 
 .bg-grid {
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(253, 54, 110, 0.18), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(168, 85, 247, 0.12), transparent 60%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124, 92, 255, 0.20), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(34, 211, 238, 0.10), transparent 60%),
     linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
   background-size: auto, auto, 32px 32px, 32px 32px;
@@ -30,3 +30,8 @@ body {
 
 @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .fade-up { animation: fade-up .25s ease-out both; }
+
+.input { width: 100%; border-radius: 0.5rem; border: 1px solid #27272a; background: #09090b; padding: 0.55rem 0.75rem; font-size: 0.875rem; color: #f4f4f5; outline: none; transition: border-color .15s, box-shadow .15s; }
+.input:focus { border-color: rgba(124, 92, 255, 0.6); box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.18); }
+.input::placeholder { color: #52525b; }
+.prose-pre { white-space: pre-wrap; word-break: break-word; }

@@ -1,19 +1,8 @@
-import { NextResponse } from "next/server";
-import { errorResponse, requireUser } from "@/lib/http";
-import { searchNotes } from "@/lib/notes";
+import { authed, body } from "@/lib/http";
+import { listLibraries, searchLibraries } from "@/lib/libraries";
 
-export async function GET(req: Request) {
-  const { user, res } = await requireUser();
-  if (!user) return res;
-  try {
-    const url = new URL(req.url);
-    const q = url.searchParams.get("q")?.trim() ?? "";
-    const subject = url.searchParams.get("subject") || undefined;
-    if (!q) return NextResponse.json({ results: [] });
-    const t = Date.now();
-    const results = await searchNotes(user.$id, q, subject);
-    return NextResponse.json({ results, ms: Date.now() - t });
-  } catch (e) {
-    return errorResponse(e);
-  }
-}
+export const POST = authed(async ({ req, userId }) => {
+  const b = await body(req);
+  const ids = Array.isArray(b.libraryIds) && b.libraryIds.length ? b.libraryIds.map(String) : (await listLibraries(userId)).map((l) => l.id);
+  return { results: await searchLibraries(userId, ids, String(b.query || ""), Number(b.limit) || 8) };
+});

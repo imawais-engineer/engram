@@ -6,8 +6,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NoteMind — search your study notes by meaning",
-  description: "A study-notes app with semantic search and related notes, built on Appwrite Databases and Appwrite Embeddings.",
+  title: "Engram — one memory for every AI",
+  description: "Portable AI memory: libraries, threads and scoped MCP keys so every AI tool shares your context. Built on Appwrite.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

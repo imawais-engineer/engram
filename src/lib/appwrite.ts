@@ -1,11 +1,21 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { Account, Client, Embeddings, TablesDB, Users } from "node-appwrite";
+import { Account, Client, Embeddings, Storage, TablesDB, Users } from "node-appwrite";
 
 export const ENDPOINT = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "https://sfo.cloud.appwrite.io/v1";
 export const PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "6a5788c00031e7384f3b";
 export const DATABASE_ID = process.env.APPWRITE_DATABASE_ID ?? "notemind";
 export const NOTES_TABLE_ID = process.env.APPWRITE_NOTES_TABLE_ID ?? "notes";
+export const BUCKET_ID = process.env.APPWRITE_BUCKET_ID ?? "documents";
+export const T = {
+  libraries: "libraries",
+  documents: "documents",
+  chunks: "chunks",
+  threads: "threads",
+  memories: "memories",
+  keys: "keys",
+  activity: "activity",
+} as const;
 export const SESSION_COOKIE = `a_session_${PROJECT_ID}`;
 
 /** Admin client: uses the server API key. Never import this from client code. */
@@ -18,6 +28,7 @@ export function createAdminClient() {
     users: new Users(client),
     tables: new TablesDB(client),
     embeddings: new Embeddings(client),
+    storage: new Storage(client),
   };
 }
 

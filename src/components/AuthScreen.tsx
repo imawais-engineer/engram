@@ -25,7 +25,7 @@ export default function AuthScreen() {
       setBusy(false);
       return;
     }
-    window.location.reload();
+    window.location.href = "/overview";
   }
 
   return (
@@ -34,21 +34,21 @@ export default function AuthScreen() {
         <section className="fade-up">
           <Logo size={36} />
           <h1 className="mt-8 text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
-            Find your notes by <span className="bg-gradient-to-r from-brand to-brand-2 bg-clip-text text-transparent">meaning</span>,
-            not keywords.
+            One memory for <span className="bg-gradient-to-r from-brand to-brand-2 bg-clip-text text-transparent">every AI</span>.
           </h1>
           <p className="mt-5 max-w-md text-zinc-400">
-            Search &ldquo;how do inner functions remember variables&rdquo; and NoteMind finds your JavaScript scope notes, even if
-            you never wrote those words. Every note shows its closest related notes too.
+            Stop re-explaining your project to every assistant. Engram keeps your documents, decisions and project context in one place,
+            and any MCP-compatible AI tool can read and add to it through a single secure connection.
           </p>
           <ul className="mt-8 space-y-3 text-sm text-zinc-300">
             {[
-              "Semantic search powered by Appwrite Embeddings (nomic-embed-text)",
-              "Notes, subjects and 768-dim vectors stored in Appwrite TablesDB",
-              "Private by default: per-user row permissions with Appwrite Auth",
+              "Libraries: PDFs, Markdown and notes, chunked and embedded with Appwrite Embeddings",
+              "Threads: typed memories (decisions, facts, tasks) that carry across Cursor, Claude and VS Code",
+              "Keys: scoped, revocable MCP bearer tokens, with every tool call logged",
+              "Built on Appwrite Auth, TablesDB and Storage",
             ].map((t) => (
               <li key={t} className="flex items-start gap-3">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-2" />
                 {t}
               </li>
             ))}
@@ -71,7 +71,7 @@ export default function AuthScreen() {
           {mode === "signup" && (
             <Field label="Name" value={name} onChange={setName} placeholder="Ada Lovelace" />
           )}
-          <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@university.edu" required />
+          <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" required />
           <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="At least 8 characters" required />
           {error && <p className="mb-4 rounded-md bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
           <button
