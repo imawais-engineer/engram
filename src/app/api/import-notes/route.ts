@@ -6,7 +6,9 @@ import { addDocument, createLibrary } from "@/lib/libraries";
 
 export const maxDuration = 300;
 type NoteRow = { $id: string; title: string; content: string; subject?: string; tags?: string[] };
-const notes = (userId: string) => listAll<NoteRow>(NOTES_TABLE_ID, [Query.equal("userId", userId), Query.select(["$id", "title", "content", "subject", "tags"])]);
+// The legacy table may not exist (fresh installs, or after the database was rebuilt); treat that as "no notes".
+const notes = (userId: string) =>
+  listAll<NoteRow>(NOTES_TABLE_ID, [Query.equal("userId", userId), Query.select(["$id", "title", "content", "subject", "tags"])]).catch(() => [] as NoteRow[]);
 
 /** Legacy NoteMind notes: GET counts them, POST moves them into a "Notes" library as indexed documents. */
 export const GET = authed(async ({ userId }) => ({ count: (await notes(userId)).length }));
