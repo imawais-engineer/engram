@@ -119,13 +119,13 @@ export default function LibraryView({ id }: { id: string }) {
 
       {!documents.length && !uploading.length && <Empty icon="📄" title="No documents yet" body="Upload a spec, architecture doc or meeting notes to make them searchable from your connected AI tools." />}
       {documents.length > 0 && (
-        <Card className="divide-y divide-white/5 overflow-hidden">
+        <Card className="divide-y divide-lilac/15 overflow-hidden">
           {documents.map((d) => (
             <div key={d.id} className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02]">
               <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-zinc-900 text-[10px] font-semibold uppercase text-zinc-400">{d.mimeType.includes("pdf") ? "PDF" : d.sourceType === "upload" ? "FILE" : "TXT"}</div>
               <button onClick={() => setViewing(d.id)} className="min-w-0 flex-1 text-left">
                 <div className="truncate text-sm font-medium text-zinc-100">{d.title}</div>
-                <div className="text-xs text-zinc-500">{d.chunkCount} chunks · {fmtSize(d.size)} · {timeAgo(d.createdAt)}{d.error && <span className="text-red-400"> · {d.error}</span>}</div>
+                <div className="mono-app mt-0.5 text-zinc-500">{d.chunkCount} chunks · {fmtSize(d.size)} · {timeAgo(d.createdAt)}{d.error && <span className="text-red-400"> · {d.error}</span>}</div>
               </button>
               <Badge tone={statusTone(d.status)}>{d.status}</Badge>
               <button onClick={() => del(d)} className="text-xs text-zinc-500 hover:text-red-300">Delete</button>

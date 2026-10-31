@@ -121,14 +121,14 @@ export default function ConnectView() {
                   <span className="font-medium text-white">{k.name}</span>
                   <Badge tone={k.status === "active" ? "green" : k.status === "expired" ? "amber" : "red"}>{k.status}</Badge>
                   <Badge tone={k.canWrite ? "violet" : "zinc"}>{k.canWrite ? "read + write" : "read-only"}</Badge>
-                  <span className="font-mono text-xs text-zinc-500">{k.prefix}…</span>
+                  <span className="mono-app text-lilac">{k.prefix}…</span>
                 </div>
                 <div className="mt-2 text-sm text-zinc-400">
                   <span className="text-zinc-500">Libraries:</span> {k.allLibraries ? "all" : k.libraryIds.map((id) => libName.get(id) ?? "deleted").join(", ") || "none"}
                   <span className="mx-2 text-zinc-700">·</span>
                   <span className="text-zinc-500">Threads:</span> {k.allThreads ? "all" : k.threadIds.map((id) => threadName.get(id) ?? "deleted").join(", ") || "none"}
                 </div>
-                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500">
+                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 mono-app text-zinc-500">
                   <span>Created {timeAgo(k.createdAt)}</span>
                   <span>Last used {timeAgo(k.lastUsedAt)}</span>
                   <span>{k.expiresAt ? `Expires ${new Date(k.expiresAt).toLocaleDateString()}` : "Never expires"}</span>
@@ -142,7 +142,7 @@ export default function ConnectView() {
             ))}
           </div>
           <Card className="mt-6 p-5">
-            <div className="mb-2 font-medium text-white">How it works</div>
+            <div className="mono-app mb-2 text-lilac">How it works</div>
             <ol className="list-decimal space-y-1.5 pl-5 text-sm text-zinc-400">
               <li>Each key is a bearer token (<span className="font-mono text-zinc-300">eng_…</span>), scoped to chosen libraries and threads, with an expiry.</li>
               <li>Your AI tool calls <span className="font-mono text-zinc-300">/mcp</span> (MCP Streamable HTTP). Engram checks the key hash, scope, expiry and revocation on every request.</li>
@@ -153,7 +153,7 @@ export default function ConnectView() {
         </section>
         <aside>
           <Card className="p-4">
-            <div className="mb-3 flex items-center justify-between"><span className="text-xs font-medium uppercase tracking-wide text-zinc-500">Recent activity</span><button onClick={act.reload} className="text-xs text-zinc-500 hover:text-zinc-200">Refresh</button></div>
+            <div className="mb-3 flex items-center justify-between"><span className="mono-app text-lilac">Recent activity</span><button onClick={act.reload} className="mono-app text-lilac hover:text-cream">Refresh</button></div>
             {!act.data && <Spinner />}
             {act.data && !act.data.activity.length && <p className="text-sm text-zinc-600">Nothing yet. Tool calls from your AI tools show up here.</p>}
             <div className="space-y-2.5">
@@ -162,7 +162,7 @@ export default function ConnectView() {
                   <div className="flex items-center gap-1.5">
                     <span className={`h-1.5 w-1.5 rounded-full ${a.status === "ok" ? "bg-emerald-400" : a.status === "denied" ? "bg-red-400" : "bg-amber-400"}`} />
                     <span className="font-mono text-zinc-300">{a.action.replace(/^tool\./, "")}</span>
-                    <span className="ml-auto text-zinc-600">{timeAgo(a.createdAt)}</span>
+                    <span className="mono-app ml-auto text-zinc-500">{timeAgo(a.createdAt)}</span>
                   </div>
                   <div className="truncate pl-3 text-zinc-500">{a.keyName}{a.detail ? ` · ${a.detail}` : ""}</div>
                 </div>

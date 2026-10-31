@@ -64,11 +64,11 @@ export default function ThreadView({ id }: { id: string }) {
                   <div className="mb-2 flex flex-wrap items-center gap-2">
                     <Badge tone={s.tone}>{s.icon} {s.label}</Badge>
                     {m.tags.map((t) => <span key={t} className="text-xs text-zinc-500">#{t}</span>)}
-                    <span className="ml-auto text-xs text-zinc-500">via <span className={m.source === "dashboard" ? "text-zinc-400" : "text-cyan-300"}>{m.source}</span> · {timeAgo(m.createdAt)}</span>
+                    <span className="mono-app ml-auto text-zinc-500">via <span className={m.source === "dashboard" ? "text-zinc-400" : "text-cyan-300"}>{m.source}</span> · {timeAgo(m.createdAt)}</span>
                   </div>
                   <p className="prose-pre text-sm leading-relaxed text-zinc-200">{m.content}</p>
                   <div className="mt-2 flex gap-3 opacity-0 transition group-hover:opacity-100">
-                    <button onClick={() => setEditing(m)} className="text-xs text-zinc-500 hover:text-zinc-200">Edit</button>
+                    <button onClick={() => setEditing(m)} className="mono-app text-lilac hover:text-cream">Edit</button>
                     <button onClick={() => del(m)} className="text-xs text-zinc-500 hover:text-red-300">Delete</button>
                   </div>
                 </Card>
@@ -78,19 +78,19 @@ export default function ThreadView({ id }: { id: string }) {
         </section>
         <aside className="space-y-4">
           <Card className="p-4">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">Instructions</div>
+            <div className="mono-app mb-2 text-lilac">Instructions</div>
             <p className="prose-pre text-sm text-zinc-300">{thread.instructions || <span className="text-zinc-600">None. Add rules every AI should follow.</span>}</p>
           </Card>
           <Card className="p-4">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">Summary</div>
+            <div className="mono-app mb-2 text-lilac">Summary</div>
             <p className="prose-pre text-sm text-zinc-300">{thread.summary || <span className="text-zinc-600">No summary yet.</span>}</p>
           </Card>
           <Card className="p-4">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">Linked libraries</div>
+            <div className="mono-app mb-2 text-lilac">Linked libraries</div>
             {linked.length ? <div className="space-y-1">{linked.map((l) => <Link key={l.id} href={`/libraries/${l.id}`} className="block text-sm text-violet-300 hover:underline">{l.icon} {l.name}</Link>)}</div> : <p className="text-sm text-zinc-600">None linked.</p>}
           </Card>
           <Card className="p-4">
-            <div className="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">Use from any AI</div>
+            <div className="mono-app mb-2 text-lilac">Use from any AI</div>
             <p className="text-sm text-zinc-400">Ask your AI: <span className="text-zinc-200">&ldquo;Load my Engram thread {thread.title} and continue.&rdquo;</span></p>
             <p className="mt-2 break-all font-mono text-[11px] text-zinc-500">threadId: {thread.id}</p>
             <Link href="/connect" className="mt-3 inline-block text-xs text-cyan-300 hover:underline">Create a key for this thread →</Link>

@@ -8,7 +8,7 @@ for (const pat of process.argv.slice(2)) {
   for (const u of (await users.list({ queries: q })).users) {
     const docs = await db.listRows({ databaseId: DB, tableId: 'documents', queries: [Query.equal('userId', u.$id), Query.limit(500), Query.select(['fileId'])] });
     for (const d of docs.rows) if (d.fileId) await storage.deleteFile({ bucketId: 'documents', fileId: d.fileId }).catch(() => {});
-    for (const t of ['chunks', 'documents', 'libraries', 'memories', 'threads', 'keys', 'activity', 'notes'])
+    for (const t of ['chunks', 'documents', 'libraries', 'memories', 'threads', 'keys', 'activity'])
       for (let i = 0; i < 20; i++) { const r = await db.deleteRows({ databaseId: DB, tableId: t, queries: [Query.equal('userId', u.$id)] }); if (!r.total) break; }
     await users.delete({ userId: u.$id });
     console.log('deleted', u.email);

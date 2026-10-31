@@ -29,7 +29,7 @@ export default function OverviewView() {
 
   return (
     <div className="fade-up">
-      <PageHeader title="Overview" subtitle="Your memory layer, shared by every AI tool you connect." action={<Link href="/connect"><Btn>Connect an AI tool</Btn></Link>} />
+      <PageHeader title="Overview" subtitle="Your memory layer, shared by every AI tool you connect." action={<Link href="/connect"><Btn variant="outline">Manage keys</Btn></Link>} />
       {(legacy.data?.count ?? 0) > 0 && (
         <Card className="mb-6 flex flex-col gap-3 border-brand/30 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-zinc-300">You have <b>{legacy.data!.count}</b> notes from NoteMind. Move them into a “Notes” library so AI tools can search them.</div>
@@ -45,7 +45,7 @@ export default function OverviewView() {
 
       {steps.some((s) => !s.done) && (
         <Card className="mt-6 p-5">
-          <div className="mb-3 font-medium text-white">Get set up</div>
+          <div className="mono-app mb-3 text-lilac">Get set up</div>
           <div className="grid gap-2 sm:grid-cols-2">
             {steps.map((s, i) => (
               <Link key={i} href={s.href} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm ${s.done ? "text-zinc-500 line-through" : "text-zinc-200 hover:bg-white/5"}`}>
@@ -59,47 +59,47 @@ export default function OverviewView() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card className="p-5 lg:col-span-2">
-          <div className="mb-3 flex items-center justify-between"><span className="font-medium text-white">Recent threads</span><Link href="/threads" className="text-xs text-zinc-500 hover:text-zinc-200">All threads →</Link></div>
+          <div className="mb-3 flex items-center justify-between"><span className="mono-app text-lilac">Recent threads</span><Link href="/threads" className="mono-app text-lilac hover:text-cream">All threads →</Link></div>
           {!data.recentThreads.length && <p className="text-sm text-zinc-600">No threads yet.</p>}
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-lilac/15">
             {data.recentThreads.map((t) => (
               <Link key={t.id} href={`/threads/${t.id}`} className="flex items-center justify-between py-2.5 text-sm hover:text-white">
                 <span className="truncate text-zinc-200">🧵 {t.title}</span>
-                <span className="shrink-0 text-xs text-zinc-500">{t.memoryCount} memories · {timeAgo(t.updatedAt)}</span>
+                <span className="mono-app shrink-0 text-zinc-500">{t.memoryCount} memories · {timeAgo(t.updatedAt)}</span>
               </Link>
             ))}
           </div>
-          <div className="mb-3 mt-6 flex items-center justify-between"><span className="font-medium text-white">Recent documents</span><Link href="/libraries" className="text-xs text-zinc-500 hover:text-zinc-200">All libraries →</Link></div>
+          <div className="mb-3 mt-6 flex items-center justify-between"><span className="mono-app text-lilac">Recent documents</span><Link href="/libraries" className="mono-app text-lilac hover:text-cream">All libraries →</Link></div>
           {!data.recentDocuments.length && <p className="text-sm text-zinc-600">No documents yet.</p>}
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-lilac/15">
             {data.recentDocuments.map((d) => (
               <Link key={d.id} href={`/libraries/${d.libraryId}`} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                 <span className="truncate text-zinc-200">{libName.get(d.libraryId)?.icon ?? "📄"} {d.title}</span>
-                <span className="flex shrink-0 items-center gap-2 text-xs text-zinc-500"><Badge tone={d.status === "indexed" ? "green" : d.status === "failed" ? "red" : "amber"}>{d.status}</Badge>{timeAgo(d.createdAt)}</span>
+                <span className="flex shrink-0 items-center gap-2 mono-app text-zinc-500"><Badge tone={d.status === "indexed" ? "green" : d.status === "failed" ? "red" : "amber"}>{d.status}</Badge>{timeAgo(d.createdAt)}</span>
               </Link>
             ))}
           </div>
         </Card>
         <div className="space-y-6">
           <Card className="p-5">
-            <div className="mb-3 flex items-center justify-between"><span className="font-medium text-white">Keys</span><Link href="/connect" className="text-xs text-zinc-500 hover:text-zinc-200">Manage →</Link></div>
+            <div className="mb-3 flex items-center justify-between"><span className="mono-app text-lilac">Keys</span><Link href="/connect" className="mono-app text-lilac hover:text-cream">Manage →</Link></div>
             {!data.keys.length && <p className="text-sm text-zinc-600">No AI tools connected yet.</p>}
             {data.keys.map((k) => (
               <div key={k.id} className="flex items-center justify-between py-1.5 text-sm">
                 <span className="flex items-center gap-2 truncate text-zinc-300"><span className={`h-2 w-2 rounded-full ${k.status === "active" ? "bg-emerald-400" : "bg-zinc-600"}`} />{k.name}</span>
-                <span className="text-xs text-zinc-500">{k.status === "active" ? `used ${timeAgo(k.lastUsedAt)}` : k.status}</span>
+                <span className="mono-app text-zinc-500">{k.status === "active" ? `used ${timeAgo(k.lastUsedAt)}` : k.status}</span>
               </div>
             ))}
           </Card>
           <Card className="p-5">
-            <div className="mb-3 font-medium text-white">Live activity</div>
+            <div className="mono-app mb-3 text-lilac">Live activity</div>
             {!data.activity.length && <p className="text-sm text-zinc-600">Tool calls from connected AIs appear here.</p>}
             <div className="space-y-2">
               {data.activity.slice(0, 8).map((a) => (
                 <div key={a.id} className="text-xs">
                   <span className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${a.status === "ok" ? "bg-emerald-400" : a.status === "denied" ? "bg-red-400" : "bg-amber-400"}`} />
                   <span className="text-cyan-300">{a.keyName}</span> <span className="font-mono text-zinc-300">{a.action.replace(/^tool\./, "")}</span>
-                  <span className="float-right text-zinc-600">{timeAgo(a.createdAt)}</span>
+                  <span className="mono-app float-right text-zinc-500">{timeAgo(a.createdAt)}</span>
                 </div>
               ))}
             </div>

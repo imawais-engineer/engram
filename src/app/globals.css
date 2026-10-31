@@ -1,37 +1,72 @@
 @import "tailwindcss";
 
+/* Engram poster palette. The zinc scale is remapped to plum → lilac → cream so every
+   existing utility class picks up the theme; brand is the pink accent. */
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-brand: #7c5cff;
-  --color-brand-2: #22d3ee;
+  --font-sans: var(--font-grotesk);
+  --font-display: var(--font-grotesk);
+  --font-mono: var(--font-jbmono);
+  --breakpoint-md: 56.25rem; /* 900px: single column below */
+
+  --color-plum: #1f0a2e;
+  --color-panel: #250d37;
+  --color-violet: #7a3fa8;
+  --color-lilac: #c9a6de;
+  --color-cream: #f6efe6;
+  --color-pink: #ff4d8d;
+  --color-brand: #ff4d8d;
+  --color-brand-2: #c9a6de;
+
+  --color-white: #f6efe6;
+  --color-black: #14061f;
+  --color-zinc-50: #fbf7f2;
+  --color-zinc-100: #f6efe6;
+  --color-zinc-200: #ede2d6;
+  --color-zinc-300: #dcc8e6;
+  --color-zinc-400: #c9a6de;
+  --color-zinc-500: #a88bbe;
+  --color-zinc-600: #9c80b2;
+  --color-zinc-700: #4e2c69;
+  --color-zinc-800: #3a1d50;
+  --color-zinc-900: #2b1240;
+  --color-zinc-950: #1f0a2e;
+  --color-cyan-300: #c9a6de;
+  --color-cyan-500: #7a3fa8;
+  --color-violet-300: #ff7aaa;
+
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
 }
 
 :root { color-scheme: dark; }
 
-body {
-  background: #09090b;
-  color: #e4e4e7;
+body { background: #1f0a2e; color: #f6efe6; }
+
+/* Poster type */
+.poster { font-family: var(--font-grotesk); font-weight: 700; text-transform: uppercase; line-height: 0.86; letter-spacing: -0.035em; font-size: 48px; }
+.poster-sm { font-family: var(--font-grotesk); font-weight: 700; text-transform: uppercase; line-height: 0.9; letter-spacing: -0.03em; font-size: 34px; }
+.mono { font-family: var(--font-jbmono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 9px; line-height: 1.5; }
+.mono-app { font-family: var(--font-jbmono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 10px; line-height: 1.5; }
+.body-s { font-size: 12px; line-height: 1.75; }
+@media (max-width: 899px) {
+  .poster { font-size: 30px; }
+  .poster-sm { font-size: 26px; }
 }
 
-.bg-grid {
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124, 92, 255, 0.20), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(34, 211, 238, 0.10), transparent 60%),
-    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-  background-size: auto, auto, 32px 32px, 32px 32px;
-}
+.hero-glow { position: absolute; left: 50%; top: 40%; width: 620px; height: 420px; transform: translate(-50%, -50%); background: #7a3fa8; filter: blur(120px); opacity: 0.55; border-radius: 9999px; pointer-events: none; }
 
-.glass { background: rgba(24, 24, 27, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.07); }
+.glass { background: #250d37; border: 1px solid rgba(201, 166, 222, 0.16); }
 
 .scroll-thin::-webkit-scrollbar { width: 6px; }
-.scroll-thin::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 3px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: #4e2c69; border-radius: 3px; }
 
 @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .fade-up { animation: fade-up .25s ease-out both; }
 
-.input { width: 100%; border-radius: 0.5rem; border: 1px solid #27272a; background: #09090b; padding: 0.55rem 0.75rem; font-size: 0.875rem; color: #f4f4f5; outline: none; transition: border-color .15s, box-shadow .15s; }
-.input:focus { border-color: rgba(124, 92, 255, 0.6); box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.18); }
-.input::placeholder { color: #52525b; }
+.input { width: 100%; border-radius: 8px; border: 1px solid #4e2c69; background: #1f0a2e; padding: 0.55rem 0.75rem; font-size: 0.875rem; color: #f6efe6; outline: none; transition: border-color .15s, box-shadow .15s; }
+.input:focus { border-color: #ff4d8d; box-shadow: 0 0 0 3px rgba(255, 77, 141, 0.2); }
+.input::placeholder { color: #9c80b2; }
 .prose-pre { white-space: pre-wrap; word-break: break-word; }
+:focus-visible { outline: 2px solid #ff4d8d; outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; }

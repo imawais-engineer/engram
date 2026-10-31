@@ -51,7 +51,7 @@ export default function LibrariesView() {
               <Card className="h-full p-5 transition hover:border-brand/40 hover:bg-zinc-900/60">
                 <div className="flex items-start justify-between">
                   <div className="text-2xl">{l.icon}</div>
-                  <span className="text-xs text-zinc-500">{timeAgo(l.updatedAt)}</span>
+                  <span className="mono-app text-zinc-500">{timeAgo(l.updatedAt)}</span>
                 </div>
                 <div className="mt-3 font-medium text-white">{l.name}</div>
                 <p className="mt-1 line-clamp-2 min-h-10 text-sm text-zinc-400">{l.description || "No description"}</p>

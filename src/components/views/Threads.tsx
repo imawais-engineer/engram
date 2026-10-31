@@ -54,7 +54,7 @@ export default function ThreadsView() {
                   <div className="mt-0.5 truncate text-sm text-zinc-400">{t.description || "No description"}</div>
                   {t.libraryIds.length > 0 && <div className="mt-2 flex flex-wrap gap-1.5">{t.libraryIds.map((id) => libName.get(id) && <span key={id} className="rounded-full bg-zinc-900 px-2 py-0.5 text-xs text-zinc-400">{libName.get(id)}</span>)}</div>}
                 </div>
-                <div className="flex shrink-0 gap-4 text-xs text-zinc-500"><span>{t.memoryCount} memories</span><span>active {timeAgo(t.updatedAt)}</span></div>
+                <div className="flex shrink-0 gap-4 mono-app text-zinc-500"><span>{t.memoryCount} memories</span><span>active {timeAgo(t.updatedAt)}</span></div>
               </Card>
             </Link>
           ))}

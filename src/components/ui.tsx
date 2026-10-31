@@ -42,11 +42,11 @@ export function timeAgo(iso: string | null | undefined) {
 
 type BtnProps = { children: ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "danger" | "outline"; disabled?: boolean; type?: "button" | "submit"; small?: boolean; className?: string; title?: string };
 export function Btn({ children, onClick, variant = "primary", disabled, type = "button", small, className = "", title }: BtnProps) {
-  const base = `inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed ${small ? "px-2.5 py-1.5 text-xs" : "px-3.5 py-2 text-sm"}`;
+  const base = `inline-flex items-center justify-center gap-1.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed ${variant === "primary" ? "rounded-full" : "rounded-lg"} ${small ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm"}`;
   const styles = {
-    primary: "bg-gradient-to-r from-brand to-brand-2 text-white shadow-lg shadow-brand/20 hover:opacity-90",
-    outline: "border border-zinc-700 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-800/50",
-    ghost: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100",
+    primary: "bg-pink text-plum hover:brightness-110",
+    outline: "border border-lilac/40 text-cream hover:border-lilac hover:bg-violet/30",
+    ghost: "text-lilac hover:bg-violet/30 hover:text-cream",
     danger: "border border-red-500/30 text-red-300 hover:bg-red-500/10",
   }[variant];
   return <button type={type} title={title} onClick={onClick} disabled={disabled} className={`${base} ${styles} ${className}`}>{children}</button>;
@@ -60,9 +60,9 @@ export function PageHeader({ title, subtitle, action, eyebrow }: { title: ReactN
   return (
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        {eyebrow && <div className="mb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">{eyebrow}</div>}
-        <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1.5 max-w-2xl text-sm text-zinc-400">{subtitle}</p>}
+        {eyebrow && <div className="mono-app mb-3 text-lilac">{eyebrow}</div>}
+        <h1 className="poster max-w-[18ch] break-words text-cream">{title}</h1>
+        {subtitle && <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-300">{subtitle}</p>}
       </div>
       {action && <div className="flex shrink-0 gap-2">{action}</div>}
     </div>
@@ -71,7 +71,7 @@ export function PageHeader({ title, subtitle, action, eyebrow }: { title: ReactN
 
 export function Empty({ icon, title, body, action }: { icon: string; title: string; body: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-zinc-800 px-6 py-14 text-center">
+    <div className="flex flex-col items-center rounded-2xl border border-dashed border-lilac/30 px-6 py-14 text-center">
       <div className="mb-3 text-3xl">{icon}</div>
       <div className="font-medium text-zinc-200">{title}</div>
       <p className="mt-1 max-w-sm text-sm text-zinc-500">{body}</p>
@@ -83,7 +83,7 @@ export function Empty({ icon, title, body, action }: { icon: string; title: stri
 export function Spinner({ label }: { label?: string }) {
   return (
     <div className="flex items-center gap-2 text-sm text-zinc-500">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-brand" />
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-pink" />
       {label}
     </div>
   );
@@ -99,8 +99,8 @@ export function ErrorNote({ error }: { error: string }) {
 }
 
 export function Badge({ children, tone = "zinc" }: { children: ReactNode; tone?: "zinc" | "green" | "amber" | "red" | "violet" | "cyan" }) {
-  const t = { zinc: "bg-zinc-800 text-zinc-300", green: "bg-emerald-500/15 text-emerald-300", amber: "bg-amber-500/15 text-amber-300", red: "bg-red-500/15 text-red-300", violet: "bg-brand/15 text-violet-300", cyan: "bg-cyan-500/15 text-cyan-300" }[tone];
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${t}`}>{children}</span>;
+  const t = { zinc: "border-lilac/30 text-zinc-300", green: "border-emerald-400/40 text-emerald-300", amber: "border-amber-400/40 text-amber-300", red: "border-red-400/40 text-red-300", violet: "border-pink/50 text-violet-300", cyan: "border-lilac/50 text-lilac" }[tone];
+  return <span className={`mono-app inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${t}`}>{children}</span>;
 }
 
 export function Modal({ open, onClose, title, children, wide }: { open: boolean; onClose: () => void; title: string; children: ReactNode; wide?: boolean }) {
@@ -113,9 +113,9 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm md:items-center" onMouseDown={onClose}>
-      <div className={`glass fade-up my-8 w-full ${wide ? "max-w-3xl" : "max-w-lg"} rounded-2xl bg-zinc-950/95 p-6 shadow-2xl`} onMouseDown={(e) => e.stopPropagation()}>
+      <div className={`glass fade-up my-8 w-full ${wide ? "max-w-3xl" : "max-w-lg"} rounded-2xl bg-panel p-6 shadow-2xl`} onMouseDown={(e) => e.stopPropagation()}>
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">{title}</h2>
+          <h2 className="poster-sm text-cream">{title}</h2>
           <button onClick={onClose} className="rounded-md px-2 text-xl leading-none text-zinc-500 hover:text-zinc-200" aria-label="Close">×</button>
         </div>
         {children}
@@ -127,7 +127,7 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <label className="mb-4 block">
-      <span className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-zinc-400">{label}</span>
+      <span className="mono-app mb-1.5 block text-lilac">{label}</span>
       {children}
       {hint && <span className="mt-1 block text-xs text-zinc-500">{hint}</span>}
     </label>
@@ -150,9 +150,9 @@ export function Code({ children }: { children: string }) {
 export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
   return (
     <Card className="p-4">
-      <div className="text-xs uppercase tracking-wide text-zinc-500">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-white">{value}</div>
-      {hint && <div className="mt-0.5 text-xs text-zinc-500">{hint}</div>}
+      <div className="mono-app text-lilac">{label}</div>
+      <div className="mt-2 font-display text-[34px] font-bold leading-none tracking-[-0.035em] text-cream">{value}</div>
+      {hint && <div className="mono-app mt-2 text-zinc-500">{hint}</div>}
     </Card>
   );
 }
@@ -168,3 +168,8 @@ export const TYPE_STYLE: Record<string, { label: string; tone: "zinc" | "green" 
   SUMMARY: { label: "Summary", tone: "zinc", icon: "≡" },
   DOCUMENT_REFERENCE: { label: "Doc reference", tone: "cyan", icon: "↗" },
 };
+
+export function Initials({ name, highlight }: { name: string; highlight?: boolean }) {
+  const ini = name.split(/[^\p{L}\p{N}]+/u).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("") || "?";
+  return <span aria-hidden className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold ${highlight ? "bg-plum text-pink" : "bg-violet text-cream"}`}>{ini}</span>;
+}
