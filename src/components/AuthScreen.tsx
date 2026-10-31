@@ -201,7 +201,7 @@ export default function AuthScreen() {
       <footer className="border-t border-lilac/20">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-5">
           <Logo size={16} />
-          <span className="mono text-lilac">Keys stored as SHA-256 hashes · per-user row permissions · no OAuth</span>
+          <span className="mono text-lilac">Keys stored as peppered HMAC-SHA256 hashes · per-user row permissions · no OAuth</span>
           <a href="/mcp" className="mono text-lilac hover:text-cream">Endpoint · /mcp</a>
         </div>
       </footer>

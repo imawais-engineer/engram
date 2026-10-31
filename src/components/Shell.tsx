@@ -49,7 +49,7 @@ export default function Shell({ user, children }: { user: { name: string; email:
       <footer className="border-t border-lilac/20">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-4 md:px-8">
           <span className="mono-app text-lilac">Engram · one memory for every AI</span>
-          <span className="mono-app text-lilac">Keys stored as SHA-256 hashes · per-user row permissions</span>
+          <span className="mono-app text-lilac">Keys stored as peppered HMAC-SHA256 hashes · per-user row permissions</span>
         </div>
       </footer>
     </div>

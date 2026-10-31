@@ -51,7 +51,7 @@ export function ConnectPanel({ token, keyName }: { token: string; keyName: strin
           <code className="min-w-0 flex-1 truncate rounded-md bg-black/60 px-3 py-2 font-mono text-[13px] text-white">{token}</code>
           <CopyBtn text={token} />
         </div>
-        <p className="mt-2 text-xs text-amber-200/70">Engram stores only a SHA-256 hash of this key.</p>
+        <p className="mt-2 text-xs text-amber-200/70">Engram stores only a peppered HMAC-SHA256 hash of this key.</p>
       </div>
       <div className="mb-2 flex items-center justify-between text-sm"><span className="text-zinc-400">MCP endpoint</span><span className="font-mono text-zinc-200">{url}</span></div>
       <div className="mb-3 mt-4 flex flex-wrap gap-1">
