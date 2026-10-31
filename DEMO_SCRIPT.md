@@ -15,8 +15,8 @@ Drop the Atlas architecture PDF. "It goes to Appwrite Storage. The text is chunk
 stored in TablesDB." Search *"what happens when riders lose network?"* and point at the cited passage.
 
 **0:40–1:00 · Threads** (Threads → Atlas MVP build)
-"A thread holds a project's instructions, summary and typed memories: decisions, facts, tasks. Note the badges: *via Claude Code*,
-*via Cursor*. Different tools wrote these."
+"A thread holds a project's instructions, summary and typed memories: decisions, facts, tasks. Note the badges: *via Laptop agent*,
+*via Research agent*. Two different keys wrote these over MCP." (The seed script wrote them. Say "keys", not specific apps.)
 
 **1:00–1:35 · Two tools, one memory** (terminals)
 Tool A (Claude Code with key 1): *"Search my Atlas library for the SMS gateway question and save a DECISION: use gateway X, batch hourly."*

@@ -169,7 +169,7 @@ Deploy: `vercel deploy --prod` with `APPWRITE_API_KEY` set as a server-only env 
 | | |
 | --- | --- |
 | ![Landing](docs/screenshots/01-landing.png) | ![Libraries](docs/screenshots/03-libraries.png) |
-| ![Semantic search with citations](docs/screenshots/04-library-search.png) | ![Thread with memories from two AI tools](docs/screenshots/05-thread.png) |
+| ![Semantic search with citations](docs/screenshots/04-library-search.png) | ![Thread with memories saved through two MCP keys](docs/screenshots/05-thread.png) |
 | ![Connect](docs/screenshots/06-connect.png) | ![Key created + live connection test](docs/screenshots/07-connect-key-test.png) |
 
 ## Limits and honest notes

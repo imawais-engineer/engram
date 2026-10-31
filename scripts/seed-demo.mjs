@@ -32,8 +32,8 @@ const thread = (await call('POST', '/api/threads', {
 })).thread;
 await call('POST', `/api/threads/${thread.id}/memories`, { type: 'PREFERENCE', content: 'Explain trade-offs briefly, then recommend one option.', tags: ['style'] });
 const scope = { libraryIds: [atlas.id, handbook.id], threadIds: [thread.id], expiresInDays: 30 };
-const cc = await call('POST', '/api/keys', { name: 'Claude Code', ...scope });
-const cur = await call('POST', '/api/keys', { name: 'Cursor', ...scope });
+const cc = await call('POST', '/api/keys', { name: 'Laptop agent', ...scope });
+const cur = await call('POST', '/api/keys', { name: 'Research agent', ...scope });
 async function mcp(token) {
   const c = new McpClient({ name: 'seed', version: '1' });
   await c.connect(new StreamableHTTPClientTransport(new URL(BASE + '/mcp'), { requestInit: { headers: { Authorization: `Bearer ${token}` } } }));
