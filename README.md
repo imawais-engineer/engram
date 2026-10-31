@@ -157,20 +157,23 @@ Production below means the Appwrite Sites deployment at https://engram-ai.appwri
   - Legacy `eng_` and new HMAC `engram_` keys.
   - Origin validation, and `/mcp` and `/api/mcp` serving the same 32 tools.
   - Cross-user isolation for skills and agents.
+- `scripts/compat-check.mjs`: **20/20** passed. Covers protocol versions, stateless `tools/list`, the 401 `WWW-Authenticate` shape, GET → 405 and JSON 404 on `/.well-known/oauth-*`, on both paths. Re-run with both acceptance suites after commit f69139c: 71/71 and 78/78.
 
-| Client | Version | What was verified |
-| --- | --- | --- |
-| MCP TypeScript SDK client (`scripts/acceptance*.mjs`) | `@modelcontextprotocol/sdk` 1.32.2 | All 32 tools, resources, prompts, scopes, read-only keys, revocation, cross-user isolation. 71 + 78 checks, production |
-| MCP Python SDK client (`scripts/mcp-python-client.py`) | `mcp` 1.30.0 | tools/list (32), save_memory, get_thread_context, read_resource, get_prompt, list_skills, get_agent_context on the seeded demo workspace, production |
-| MCP Inspector CLI | `@modelcontextprotocol/inspector` 2.13.0 | tools/list on `/mcp` (32 tools); tools/call get_agent_context on `/api/mcp` against the demo workspace, production |
-| Claude Code | 2.1.316 | `claude mcp add --transport http … --header "Authorization: Bearer engram_…"`; `claude mcp list` reports **✔ Connected** against production. Handshake only: this box has no signed-in Claude session, so no tool call was made from Claude Code |
-| curl | n/a | Protocol negotiation, stateless `tools/list` with no initialize, 401/405/406 responses |
+### Client compatibility
 
-Protocol negotiation: the server answers `2024-11-05`, `2025-03-26`, `2025-06-18` and `2025-11-25` with the same version.
-For an unknown future version it answers with its latest (`2025-11-25`). The config snippets for **Cursor** and **VS Code** in the
-Connect page follow those vendors' MCP docs, but **I have not tested them against Engram**. The **Claude Desktop** snippet uses the
-community `mcp-remote` bridge and is also untested. When a request fails auth, MCP Inspector tries OAuth discovery. Engram
-doesn't implement OAuth, only bearer keys, so Inspector shows `auth_required` for a bad key.
+Full matrix with evidence and config snippets: **[docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)**. It covers 22 client and transport rows and the
+protocol behaviour checks. Summary as of 31 Oct 2026 (PKT), production:
+
+| Status | Clients |
+| --- | --- |
+| **Tested** (run against production) | curl; MCP TypeScript SDK 1.32.2; MCP Python SDK 1.30.0; FastMCP 4.1.4; LangChain MCP adapters 0.3.2; OpenAI Agents SDK 0.24.0; MCP Inspector CLI 2.13.0; mcp-remote 0.15.2 (stdio bridge) |
+| **Tested, handshake only** (`✔ Connected`, no signed-in session for tool calls) | Claude Code 2.1.316 (`mcp add`, `add-json`, project `.mcp.json` with `${ENGRAM_KEY}`); Gemini CLI 0.66.0 |
+| **Config accepted, not connected** (needs vendor login) | Codex CLI 0.166.0 |
+| **Documented, not run** (GUI apps / accounts) | Cursor, VS Code, Windsurf, Zed, Claude Desktop (via mcp-remote), Perplexity, Mistral Le Chat, Grok Bot |
+| **Needs OAuth** (Engram has none) | ChatGPT custom apps; claude.ai custom connectors (unless the org has the request-headers beta) |
+
+The server negotiates `2024-11-05`, `2025-03-26`, `2025-06-18` and `2025-11-25`. It is Streamable HTTP only: the legacy
+HTTP+SSE transport is not supported (GET → 405). `/.well-known/oauth-*` returns a JSON 404, so OAuth discovery fails cleanly.
 
 ### Connect a client
 
@@ -180,7 +183,7 @@ claude mcp add --transport http engram https://engram-ai.appwrite.network/mcp --
 ```
 
 ```jsonc
-// Cursor ~/.cursor/mcp.json (format from Cursor docs, untested)
+// Cursor ~/.cursor/mcp.json (format from Cursor docs, not run; see docs/COMPATIBILITY.md)
 { "mcpServers": { "engram": { "url": "https://engram-ai.appwrite.network/mcp", "headers": { "Authorization": "Bearer engram_…" } } } }
 ```
 
