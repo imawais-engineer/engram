@@ -56,12 +56,35 @@ const schema = {
     cols: [varchar('userId', 36, true), varchar('name', 80, true), varchar('tokenHash', 64, true), varchar('prefix', 16, true),
       bool('allLibraries', false, false), bool('allThreads', false, false), bool('canWrite', false, true),
       varchar('libraryIds', 36, false, { array: true }), varchar('threadIds', 36, false, { array: true }),
-      dt('expiresAt'), dt('revokedAt'), dt('lastUsedAt')],
+      dt('expiresAt'), dt('revokedAt'), dt('lastUsedAt'), varchar('hashVersion', 16)],
     idx: [['by_hash', ['tokenHash'], undefined, TablesDBIndexType.Unique], ['by_user', ['userId', '$createdAt'], [OrderBy.Asc, OrderBy.Desc]]],
   },
   activity: {
     cols: [varchar('userId', 36, true), varchar('keyId', 36), varchar('keyName', 80), varchar('action', 48, true), varchar('detail', 255), varchar('status', 16)],
     idx: [['by_user', ['userId', '$createdAt'], [OrderBy.Asc, OrderBy.Desc]], ['by_key', ['keyId', '$createdAt'], [OrderBy.Asc, OrderBy.Desc]]],
+  },
+  // Skills + agents (additive). Relationship tables hold plain ids so the schema stays portable.
+  skills: {
+    cols: [varchar('userId', 36, true), varchar('name', 120, true), text('description'), varchar('category', 48), varchar('tags', 32, false, { array: true }),
+      varchar('status', 16, true), int('currentVersion'), medium('instructions'), text('compatibility')],
+    idx: [['by_user', ['userId', '$updatedAt'], [OrderBy.Asc, OrderBy.Desc]], ['by_user_status', ['userId', 'status']]],
+  },
+  skill_versions: {
+    cols: [varchar('userId', 36, true), varchar('skillId', 36, true), int('version', true), varchar('name', 120), text('description'), medium('instructions'), varchar('changeSummary', 255)],
+    idx: [['by_skill', ['skillId', 'version'], [OrderBy.Asc, OrderBy.Desc]], ['by_user', ['userId']]],
+  },
+  agents: {
+    cols: [varchar('userId', 36, true), varchar('name', 120, true), text('description'), text('identity'), text('purpose'), medium('systemInstructions'),
+      text('responseStyle'), text('constraints'), varchar('preferredClient', 64), varchar('status', 16, true), int('version')],
+    idx: [['by_user', ['userId', '$updatedAt'], [OrderBy.Asc, OrderBy.Desc]], ['by_user_status', ['userId', 'status']]],
+  },
+  agent_skills: {
+    cols: [varchar('userId', 36, true), varchar('agentId', 36, true), varchar('skillId', 36, true), int('pinnedVersion')],
+    idx: [['by_agent', ['agentId']], ['by_skill', ['skillId']], ['uniq_agent_skill', ['agentId', 'skillId'], undefined, TablesDBIndexType.Unique]],
+  },
+  agent_libraries: {
+    cols: [varchar('userId', 36, true), varchar('agentId', 36, true), varchar('libraryId', 36, true), varchar('access', 16)],
+    idx: [['by_agent', ['agentId']], ['by_library', ['libraryId']], ['uniq_agent_library', ['agentId', 'libraryId'], undefined, TablesDBIndexType.Unique]],
   },
 };
 

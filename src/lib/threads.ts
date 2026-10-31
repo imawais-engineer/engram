@@ -1,7 +1,7 @@
 import "server-only";
 import { ID, Query } from "node-appwrite";
 import { DATABASE_ID, T } from "./appwrite";
-import { getOwned, HttpError, listAll, ownerPerms, tables } from "./db";
+import { deleteWhere, getOwned, HttpError, listAll, ownerPerms, tables } from "./db";
 import { asDoc, asQuery, cosine, embed, keywordScore } from "./embed";
 
 export const MEMORY_TYPES = ["FACT", "DECISION", "PREFERENCE", "PROJECT_STATE", "TASK", "INSTRUCTION", "SUMMARY", "DOCUMENT_REFERENCE"] as const;
@@ -73,7 +73,7 @@ export async function updateThread(userId: string, id: string, input: ThreadInpu
 
 export async function deleteThread(userId: string, id: string) {
   if (!(await getOwned(T.threads, userId, id))) return false;
-  await tables().deleteRows({ databaseId: DATABASE_ID, tableId: T.memories, queries: [Query.equal("threadId", id), Query.equal("userId", userId)] });
+  await deleteWhere(T.memories, [Query.equal("threadId", id), Query.equal("userId", userId)]);
   await tables().deleteRow({ databaseId: DATABASE_ID, tableId: T.threads, rowId: id });
   return true;
 }

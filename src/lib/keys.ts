@@ -1,19 +1,30 @@
 import "server-only";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, createHmac, randomBytes } from "node:crypto";
 import { ID, Query } from "node-appwrite";
 import { DATABASE_ID, T } from "./appwrite";
 import { getOwned, HttpError, listAll, ownerPerms, tables } from "./db";
 
 export type KeyScope = { allLibraries: boolean; libraryIds: string[]; allThreads: boolean; threadIds: string[]; canWrite: boolean };
-export type ApiKey = KeyScope & { id: string; name: string; prefix: string; expiresAt: string | null; revokedAt: string | null; lastUsedAt: string | null; createdAt: string; status: "active" | "expired" | "revoked" };
+export type ApiKey = KeyScope & { id: string; name: string; prefix: string; expiresAt: string | null; revokedAt: string | null; lastUsedAt: string | null; createdAt: string; status: "active" | "expired" | "revoked"; hashVersion: string };
 export type AuthedKey = ApiKey & { userId: string };
 
 type KeyRow = {
   $id: string; $createdAt: string; userId: string; name: string; tokenHash: string; prefix: string; allLibraries?: boolean; allThreads?: boolean; canWrite?: boolean;
-  libraryIds?: string[]; threadIds?: string[]; expiresAt?: string | null; revokedAt?: string | null; lastUsedAt?: string | null;
+  libraryIds?: string[]; threadIds?: string[]; expiresAt?: string | null; revokedAt?: string | null; lastUsedAt?: string | null; hashVersion?: string | null;
 };
 
+/** Legacy (v1) hash used by `eng_` keys: plain SHA-256. Still accepted so existing keys keep working. */
 export const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
+
+/** Current (v2) hash used by `engram_` keys: HMAC-SHA256 with a server-only pepper (ENGRAM_KEY_PEPPER). */
+export const HASH_V2 = "hmac-sha256-v2";
+function pepper() {
+  const p = process.env.ENGRAM_KEY_PEPPER;
+  if (!p || p.length < 32) throw new HttpError(500, "ENGRAM_KEY_PEPPER is not configured on the server");
+  return p;
+}
+export const hmacToken = (token: string) => createHmac("sha256", pepper()).update(token).digest("hex");
+const TOKEN_RE = /^(engram|eng)_[A-Za-z0-9_-]{20,64}$/;
 
 function status(r: KeyRow): ApiKey["status"] {
   if (r.revokedAt) return "revoked";
@@ -23,6 +34,7 @@ function status(r: KeyRow): ApiKey["status"] {
 const toKey = (r: KeyRow): ApiKey => ({
   id: r.$id, name: r.name, prefix: r.prefix, allLibraries: !!r.allLibraries, libraryIds: r.libraryIds || [], allThreads: !!r.allThreads, threadIds: r.threadIds || [],
   canWrite: r.canWrite !== false, expiresAt: r.expiresAt || null, revokedAt: r.revokedAt || null, lastUsedAt: r.lastUsedAt || null, createdAt: r.$createdAt, status: status(r),
+  hashVersion: r.hashVersion || "sha256-v1",
 });
 
 export async function listKeys(userId: string) {
@@ -37,13 +49,14 @@ async function ownedIds(tableId: string, userId: string, ids: unknown) {
 
 export type KeyInput = { name?: unknown; allLibraries?: unknown; libraryIds?: unknown; allThreads?: unknown; threadIds?: unknown; canWrite?: unknown; expiresInDays?: unknown };
 
-/** Creates a key. The plaintext token is returned exactly once; only its SHA-256 hash is stored. */
+/** Creates a key. The plaintext token is returned exactly once; only its HMAC-SHA256 (peppered) hash is stored. */
 export async function createKey(userId: string, input: KeyInput): Promise<{ key: ApiKey; token: string }> {
   const name = String(input.name ?? "").trim().slice(0, 80);
   if (!name) throw new HttpError(400, "Key name is required");
   const days = Number(input.expiresInDays ?? 30);
   const expiresAt = days > 0 ? new Date(Date.now() + Math.min(days, 365) * 86400_000).toISOString() : null;
-  const token = `eng_${randomBytes(24).toString("base64url")}`;
+  pepper(); // fail before writing anything if the pepper is missing
+  const token = `engram_${randomBytes(32).toString("base64url")}`;
   const scope = {
     allLibraries: input.allLibraries === true,
     allThreads: input.allThreads === true,
@@ -53,7 +66,7 @@ export async function createKey(userId: string, input: KeyInput): Promise<{ key:
   };
   const row = await tables().createRow({
     databaseId: DATABASE_ID, tableId: T.keys, rowId: ID.unique(), permissions: ownerPerms(userId),
-    data: { userId, name, tokenHash: hashToken(token), prefix: token.slice(0, 12), expiresAt, ...scope },
+    data: { userId, name, tokenHash: hmacToken(token), hashVersion: HASH_V2, prefix: token.slice(0, 15), expiresAt, ...scope },
   });
   await logActivity(userId, { keyId: row.$id, keyName: name, action: "key.created", detail: "Created in dashboard" });
   return { key: toKey(row as unknown as KeyRow), token };
@@ -85,8 +98,11 @@ export async function deleteKey(userId: string, id: string) {
 
 /** Resolves a bearer token to its key, rejecting unknown, revoked and expired keys. */
 export async function authenticateToken(token: string): Promise<AuthedKey | null> {
-  if (!/^eng_[A-Za-z0-9_-]{20,64}$/.test(token)) return null;
-  const res = await tables().listRows({ databaseId: DATABASE_ID, tableId: T.keys, queries: [Query.equal("tokenHash", hashToken(token)), Query.limit(1)] });
+  const m = TOKEN_RE.exec(token);
+  if (!m) return null;
+  // engram_ keys are HMAC-peppered (v2); legacy eng_ keys are plain SHA-256 (v1). The prefix decides which hash to look up.
+  const hash = m[1] === "engram" ? hmacToken(token) : hashToken(token);
+  const res = await tables().listRows({ databaseId: DATABASE_ID, tableId: T.keys, queries: [Query.equal("tokenHash", hash), Query.limit(1)] });
   const r = res.rows[0] as unknown as KeyRow | undefined;
   if (!r) return null;
   const k = toKey(r);

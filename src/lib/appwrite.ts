@@ -15,6 +15,11 @@ export const T = {
   memories: "memories",
   keys: "keys",
   activity: "activity",
+  skills: "skills",
+  skillVersions: "skill_versions",
+  agents: "agents",
+  agentSkills: "agent_skills",
+  agentLibraries: "agent_libraries",
 } as const;
 export const SESSION_COOKIE = `a_session_${PROJECT_ID}`;
 

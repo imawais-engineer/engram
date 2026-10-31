@@ -48,3 +48,14 @@ export class HttpError extends Error {
     super(message);
   }
 }
+
+/** Bulk-deletes every row matching `queries`, looping because bulk deletes are capped per request. */
+export async function deleteWhere(tableId: string, queries: string[]) {
+  let removed = 0;
+  for (let i = 0; i < 100; i++) {
+    const r = await tables().deleteRows({ databaseId: DATABASE_ID, tableId, queries });
+    removed += r.total;
+    if (!r.total) break;
+  }
+  return removed;
+}

@@ -1,4 +1,5 @@
 import "server-only";
+import { unlinkLibraryFromAgents } from "./agents";
 import { ID, Query } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 import { BUCKET_ID, createAdminClient, DATABASE_ID, T } from "./appwrite";
@@ -56,6 +57,7 @@ export async function deleteLibrary(userId: string, id: string) {
   if (!(await getOwned(T.libraries, userId, id))) return false;
   const docs = await listAll<DocRow>(T.documents, [Query.equal("libraryId", id), Query.equal("userId", userId), Query.select(["$id"])]);
   for (const d of docs) await deleteDocument(userId, d.$id);
+  await unlinkLibraryFromAgents(userId, id);
   await tables().deleteRow({ databaseId: DATABASE_ID, tableId: T.libraries, rowId: id });
   return true;
 }

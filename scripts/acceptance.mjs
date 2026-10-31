@@ -75,7 +75,7 @@ const scope = { libraryIds: [lib.id], threadIds: [thread.id], expiresInDays: 7 }
 const kA = await A('POST', '/api/keys', { name: 'Claude Desktop', ...scope });
 const kB = await A('POST', '/api/keys', { name: 'Cursor', ...scope });
 const kR = await A('POST', '/api/keys', { name: 'Read-only bot', ...scope, canWrite: false });
-check('create keys, token shown once', kA.token?.startsWith('eng_') && kB.token && kR.token);
+check('create keys, token shown once', kA.token?.startsWith('engram_') && kB.token && kR.token);
 const keys = await A('GET', '/api/keys');
 check('key list never returns token or hash', !JSON.stringify(keys).includes(kA.token) && !JSON.stringify(keys).includes('tokenHash'));
 
@@ -84,7 +84,7 @@ check('unauthenticated request rejected', (await fetch(BASE + '/mcp', { method: 
 check('garbage token rejected', await mcpFails('eng_thisisnotarealkeyatall1234567'));
 const a = await mcp(kA.token);
 const tools = (await a.client.listTools()).tools.map((t) => t.name).sort();
-check('10 tools exposed', tools.length === 10, tools.join(','));
+check('32 tools exposed (original 10 included)', tools.length === 32 && ['list_libraries','search_library','list_documents','get_document','list_threads','get_thread_context','save_memory','update_memory','search_memory','link_library'].every((n) => tools.includes(n)), tools.join(','));
 const libs = await a.call('list_libraries');
 check('list_libraries only shows scoped library', libs.data?.libraries?.length === 1 && libs.data.libraries[0].id === lib.id);
 const sr = await a.call('search_library', { query: 'what happens when the network is bad?' });
