@@ -69,10 +69,18 @@ Each result comes back with its `documentTitle` and `chunkIndex` as a citation.
 
 ### VectorsDB vs TablesDB: why the adapter exists
 
-Appwrite **VectorsDB** is the natural home for these vectors. I tested it on this project: `vectorsDB.create()` returns
-`403 The maximum number of databases allowed for the selected plan has reached`, because the Free plan allows **one database**,
-and the TablesDB database already uses it. Engram therefore runs on TablesDB today. A `VectorsDBVectorStore` can be added
-behind the same interface on a paid plan, with no changes to the MCP server or UI. Brute-force ranking works well at demo
+Appwrite **VectorsDB** is the natural home for these vectors, and I tried to make it Engram's only database. Two attempts on
+this Free-plan project (Appwrite Cloud, sfo, 31 Oct 2026):
+
+1. With the TablesDB database still present, `vectorsDB.create()` returned
+   `403 The maximum number of databases allowed for the selected plan has reached. Upgrade to increase the limit.`
+2. After deleting the TablesDB database so the one-database slot was free, it returned
+   `400 No shared vectorsdb pool is configured on this deployment. Pass a specification to create the database on a dedicated database.`
+   The only specifications listed are paid dedicated instances (from $10/month), all disabled for this organisation.
+
+So VectorsDB isn't available on the Free plan here, and I recreated the TablesDB schema with `scripts/setup-appwrite.mjs`.
+A `VectorsDBVectorStore` can be added behind the same interface when a dedicated VectorsDB is available, with no changes
+to the MCP server or UI. Brute-force ranking works well at demo
 scale (thousands of chunks). It is the first part to replace for large libraries.
 
 ### Embedding storage test (768 dims in TablesDB)
@@ -168,13 +176,20 @@ Deploy: `vercel deploy --prod` with `APPWRITE_API_KEY` set as a server-only env 
 
 | | |
 | --- | --- |
-| ![Landing](docs/screenshots/01-landing.png) | ![Libraries](docs/screenshots/03-libraries.png) |
-| ![Semantic search with citations](docs/screenshots/04-library-search.png) | ![Thread with memories saved through two MCP keys](docs/screenshots/05-thread.png) |
-| ![Connect](docs/screenshots/06-connect.png) | ![Key created + live connection test](docs/screenshots/07-connect-key-test.png) |
+| ![Landing](docs/screenshots/01-landing.png) | ![Overview](docs/screenshots/02-overview.png) |
+| ![Libraries](docs/screenshots/03-libraries.png) | ![Semantic search with citations](docs/screenshots/04-library-search.png) |
+| ![Thread with memories saved through two MCP keys](docs/screenshots/05-thread.png) | ![Connect](docs/screenshots/06-connect.png) |
+| ![Key created + live connection test](docs/screenshots/07-connect-key-test.png) | ![Full landing page](docs/screenshots/01b-landing-full.png) |
+
+Mobile (390 px): [landing](docs/screenshots/10-mobile-landing.png) · [overview](docs/screenshots/09-mobile-overview.png) · [thread](docs/screenshots/08-mobile-thread.png)
+
+**Visual language:** plum `#1F0A2E` ground, cream `#F6EFE6` text, pink `#FF4D8D` actions (dark plum text on pink, 5.9:1),
+violet `#7A3FA8` surfaces, lilac `#C9A6DE` mono labels (8.8:1 on plum), panel `#250D37` bands. Space Grotesk poster headlines and
+JetBrains Mono labels via `next/font`. Single column under 900 px.
 
 ## Limits and honest notes
 
-- The Free plan allows one database and one bucket, so there is no VectorsDB (see above).
+- VectorsDB needs a paid dedicated instance on this project, so Engram uses TablesDB (see above).
 - Documents are indexed inside the upload request (up to 300 s on Vercel). There is no background queue. Each document is
   limited to 10 MB and 400 chunks.
 - The rate limit is held in memory, per serverless instance. It isn't global.
