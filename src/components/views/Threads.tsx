@@ -40,7 +40,7 @@ export default function ThreadsView() {
 
   return (
     <div className="fade-up">
-      <PageHeader title="Threads" subtitle="Long-running context for a project or task: instructions, a running summary and typed memories that every AI tool can load and add to." action={<Btn onClick={() => setOpen(true)}>+ New thread</Btn>} />
+      <PageHeader title="Threads" subtitle="Long-running context for a project or task: instructions, a running summary and typed memories that your connected AI tools can load and add to." action={<Btn onClick={() => setOpen(true)}>+ New thread</Btn>} />
       <ErrorNote error={error} />
       {!data && !error && <Skeleton rows={3} />}
       {data && !data.threads.length && <Empty icon="🧵" title="No threads yet" body="A thread is where AI tools pick up where the last one left off. Create one per project." action={<Btn onClick={() => setOpen(true)}>Start a thread</Btn>} />}

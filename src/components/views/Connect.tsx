@@ -13,11 +13,11 @@ const useOrigin = () => (typeof window === "undefined" ? "" : window.location.or
 
 export function snippets(url: string, token: string) {
   return [
-    { id: "cursor", label: "Cursor", file: "~/.cursor/mcp.json", verified: true, code: JSON.stringify({ mcpServers: { engram: { url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2) },
-    { id: "claude-code", label: "Claude Code", file: "terminal", verified: true, code: `claude mcp add --transport http engram ${url} \\\n  --header "Authorization: Bearer ${token}"` },
-    { id: "vscode", label: "VS Code", file: ".vscode/mcp.json", verified: true, code: JSON.stringify({ servers: { engram: { type: "http", url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2) },
-    { id: "claude-desktop", label: "Claude Desktop", file: "claude_desktop_config.json (via mcp-remote bridge)", verified: false, code: JSON.stringify({ mcpServers: { engram: { command: "npx", args: ["-y", "mcp-remote", url, "--header", "Authorization:${AUTH_HEADER}"], env: { AUTH_HEADER: `Bearer ${token}` } } } }, null, 2) },
-    { id: "curl", label: "Any client / curl", file: "Streamable HTTP, stateless", verified: true, code: `curl -s ${url} \\\n  -H "Authorization: Bearer ${token}" \\\n  -H "Content-Type: application/json" \\\n  -H "Accept: application/json, text/event-stream" \\\n  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'` },
+    { id: "cursor", label: "Cursor", file: "~/.cursor/mcp.json", note: "Format from Cursor’s MCP docs; not yet tested against Engram.", code: JSON.stringify({ mcpServers: { engram: { url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2) },
+    { id: "claude-code", label: "Claude Code", file: "terminal", note: "Tested: Claude Code 2.1.316 reports ✔ Connected.", code: `claude mcp add --transport http engram ${url} \\\n  --header "Authorization: Bearer ${token}"` },
+    { id: "vscode", label: "VS Code", file: ".vscode/mcp.json", note: "Format from VS Code’s MCP docs; not yet tested against Engram.", code: JSON.stringify({ servers: { engram: { type: "http", url, headers: { Authorization: `Bearer ${token}` } } } }, null, 2) },
+    { id: "claude-desktop", label: "Claude Desktop", file: "claude_desktop_config.json", note: "Uses the community mcp-remote bridge; not tested against Engram.", code: JSON.stringify({ mcpServers: { engram: { command: "npx", args: ["-y", "mcp-remote", url, "--header", "Authorization:${AUTH_HEADER}"], env: { AUTH_HEADER: `Bearer ${token}` } } } }, null, 2) },
+    { id: "curl", label: "curl", file: "Streamable HTTP, stateless JSON responses", note: "Tested, along with MCP Inspector CLI and the TypeScript and Python MCP SDKs.", code: `curl -s ${url} \\\n  -H "Authorization: Bearer ${token}" \\\n  -H "Content-Type: application/json" \\\n  -H "Accept: application/json, text/event-stream" \\\n  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'` },
   ];
 }
 
@@ -58,7 +58,7 @@ export function ConnectPanel({ token, keyName }: { token: string; keyName: strin
         {list.map((x) => <button key={x.id} onClick={() => setTab(x.id)} className={`rounded-lg px-3 py-1.5 text-xs ${tab === x.id ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"}`}>{x.label}</button>)}
       </div>
       <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="text-xs text-zinc-500">{s.file}{!s.verified && " · community bridge, not an official Anthropic config"}</span>
+        <span className="text-xs text-zinc-500">{s.file} · {s.note}</span>
         <CopyBtn text={s.code} label="Copy config" />
       </div>
       <Code>{s.code}</Code>
@@ -108,12 +108,12 @@ export default function ConnectView() {
 
   return (
     <div className="fade-up">
-      <PageHeader title="Connect" subtitle="One MCP endpoint for every AI tool. Give each tool its own scoped key so you can see what it did and revoke it without breaking the others." action={<Btn onClick={() => setOpen(true)}>+ New key</Btn>} />
+      <PageHeader title="Connect" subtitle="One MCP endpoint for your AI tools. Give each tool its own scoped key so you can see what it did and revoke it without breaking the others." action={<Btn onClick={() => setOpen(true)}>+ New key</Btn>} />
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <section className="min-w-0">
           <ErrorNote error={keys.error} />
           {!keys.data && !keys.error && <Skeleton rows={2} />}
-          {keys.data && !keys.data.keys.length && <Empty icon="🔑" title="No keys yet" body="Create a key, paste the config into Cursor, Claude Code or VS Code, and your libraries and threads are available there." action={<Btn onClick={() => setOpen(true)}>Create your first key</Btn>} />}
+          {keys.data && !keys.data.keys.length && <Empty icon="🔑" title="No keys yet" body="Create a key and add the endpoint to an MCP client such as Claude Code. Your libraries and threads become available there." action={<Btn onClick={() => setOpen(true)}>Create your first key</Btn>} />}
           <div className="space-y-3">
             {keys.data?.keys.map((k) => (
               <Card key={k.id} className={`p-4 ${k.status !== "active" ? "opacity-60" : ""}`}>
@@ -147,7 +147,7 @@ export default function ConnectView() {
               <li>Each key is a bearer token (<span className="font-mono text-zinc-300">eng_…</span>), scoped to chosen libraries and threads, with an expiry.</li>
               <li>Your AI tool calls <span className="font-mono text-zinc-300">/mcp</span> (MCP Streamable HTTP). Engram checks the key hash, scope, expiry and revocation on every request.</li>
               <li>Tools: list_libraries, search_library, list_documents, get_document, list_threads, get_thread_context, save_memory, update_memory, search_memory, link_library.</li>
-              <li>A memory saved from Cursor is instantly visible to Claude, and the other way round.</li>
+              <li>A memory saved through one key is immediately visible through every other key that can see that thread.</li>
             </ol>
           </Card>
         </section>

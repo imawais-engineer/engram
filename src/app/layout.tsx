@@ -7,7 +7,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: "Engram — one memory for every AI",
-  description: "Portable AI memory: libraries, threads and scoped MCP keys so every AI tool shares your context. Built on Appwrite.",
+  description: "Portable AI memory: libraries, threads and scoped MCP keys so your connected AI tools share one context. Built on Appwrite.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

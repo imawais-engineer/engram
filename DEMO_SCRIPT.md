@@ -1,34 +1,41 @@
-# NoteMind — 2-minute demo script
+# Engram: 2-minute demo script
 
-**0:00–0:15 · Hook** (landing page on screen)
-"Every student has hundreds of notes, but when you need one, you never remember the exact words you wrote.
-NoteMind lets you search your notes by meaning. It's built on Appwrite Databases and Appwrite's built-in embeddings."
+**Title:** One memory. Two AI tools. Zero context loss.
 
-**0:15–0:30 · Sign up** (create account → empty state)
-"I'll create an account. Auth is Appwrite email/password; the session sits in an httpOnly cookie, and every note is a TablesDB row only I can read.
-To start fast, I'll load ten sample computer-science notes."
-→ Click **Load sample notes**.
+Before recording, run `scripts/seed-demo.mjs` against production (or use the account in `DEMO_ACCOUNT.txt`), and keep two
+terminals ready, each with a different key from that file. Engram has been tested with Claude Code, MCP Inspector and the
+TypeScript and Python MCP SDKs, so use two of those.
 
-**0:30–1:05 · Semantic search** (type each query slowly)
-1. "how do inner functions remember variables" → top result **JavaScript: lexical scope & inner functions**.
-   "That note never says 'remember variables', but it's the right one, with a 73% match."
-2. "why is my program stuck waiting forever" → **OS: deadlocks**.
-3. "make my database queries faster" → **SQL indexes**.
-"Each query is embedded with nomic-embed-text through Appwrite Embeddings and ranked against my notes by cosine similarity, in about 100 ms."
+**0:00–0:15 · Problem** (landing page)
+"Every AI tool forgets. What you decided with one assistant is gone when you open another. Engram is one memory layer you own,
+built on Appwrite, that any MCP client you connect can read and write."
 
-**1:05–1:25 · Related notes**
-Click the JavaScript note. "On the right is the note and its related notes, the nearest neighbours of its own vector, so revising closures surfaces my React useEffect note too."
+**0:15–0:40 · Libraries** (Libraries → Project Atlas)
+Drop the Atlas architecture PDF. "It goes to Appwrite Storage. The text is chunked, embedded with Appwrite Embeddings, and
+stored in TablesDB." Search *"what happens when riders lose network?"* and point at the cited passage.
 
-**1:25–1:45 · Add and edit**
-Click **+ New note**: title "TCP three-way handshake", subject "Computer Networks", paste a short paragraph, Save.
-Search "how does a connection get started between two computers" → the new note is first.
-Click **Edit**, change the title, save. "Edits re-embed the note automatically."
+**0:40–1:00 · Threads** (Threads → Atlas MVP build)
+"A thread holds a project's instructions, summary and typed memories: decisions, facts, tasks. Note the badges: *via Claude Code*,
+*via Cursor*. Different tools wrote these."
 
-**1:45–2:00 · Wrap-up**
-Show the Appwrite Console: database `notemind`, table `notes`, its typed columns, indexes and row permissions.
-"NoteMind: TablesDB for the notes and vectors, Appwrite Embeddings for meaning, Appwrite Auth for privacy. Find any note by what it means. Thanks!"
+**1:00–1:35 · Two tools, one memory** (terminals)
+Tool A (Claude Code with key 1): *"Search my Atlas library for the SMS gateway question and save a DECISION: use gateway X, batch hourly."*
+(This needs a signed-in Claude Code session. Without one, run `save_memory` through MCP Inspector CLI.)
+Tool B (Inspector or the Python client with key 2): `get_thread_context` shows the new DECISION, saved through a different key.
+Refresh the thread page in the dashboard, where it appears live.
+
+**1:35–1:55 · Control** (Connect)
+"Each tool gets its own key, scoped to specific libraries and threads, with an expiry. Only the SHA-256 hash is stored. The
+activity log shows every tool call." Revoke key 2, then run it again to show the 401.
+
+**1:55–2:00 · Close**
+"Engram: one memory for every AI. Built on Appwrite Auth, TablesDB, Storage and Embeddings."
 
 ---
 
-## Submission blurb (short)
-**NoteMind: search your study notes by meaning.** Write or paste lecture notes, then ask in your own words. "Why is my program stuck waiting forever?" finds your deadlocks note even though it never uses those words. Every note also shows its related notes. Notes, subjects, tags and 768-dimension vectors live in Appwrite **TablesDB** (typed columns, per-user row security, composite indexes). Vectors come from Appwrite's built-in **nomic-embed-text** embeddings, and Appwrite **Auth** handles sign-in. Built with Next.js, TypeScript and Tailwind, deployed on Vercel.
+**Submission blurb:**
+Engram is a portable memory layer for AI tools, built on Appwrite. Libraries hold your documents, which are chunked and
+embedded with Appwrite Embeddings and stored in TablesDB. Threads hold typed project memories such as decisions, facts and
+tasks. One stateless MCP endpoint, protected by scoped and revocable bearer keys, lets each AI client search your context and
+save to it, so a decision made in one tool is available in the next. It is built on Appwrite Auth, TablesDB (7 tables,
+owner-only rows), Storage and Embeddings, and the vector store sits behind an interface so VectorsDB can replace it on a paid plan.

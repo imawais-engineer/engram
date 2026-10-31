@@ -1,87 +1,185 @@
-# NoteMind 🧠
+# Engram: one memory for every AI
 
-**Search your study notes by meaning, not keywords.**
+Engram is a memory layer that you own, built on **Appwrite**. You keep your documents, project decisions and working context in one
+place. Any MCP client you connect, such as Claude Code, MCP Inspector or your own agent, can search that context and add to it
+through **one password-protected MCP endpoint**.
 
-NoteMind is a study-notes app for students. Write or paste lecture notes, then ask in your own words:
-*"why is my program stuck waiting forever"* finds your **deadlocks** note, and *"how do inner functions remember variables"*
-finds your **JavaScript scope** note, even though neither note uses those words. Every note also shows its **related notes**,
-so revising one topic surfaces the connected ones.
+**Live:** https://engram-mcp.vercel.app · **MCP endpoint:** `https://engram-mcp.vercel.app/mcp`
+(also served at https://notemind-nine.vercel.app, the project's original name)
 
-**Live demo:** https://notemind-nine.vercel.app
+> Built for the Appwrite Databases Hackathon (Oct 2026). Built with Appwrite **TablesDB**, Auth, Storage and Embeddings.
 
-Built solo for the **Appwrite Databases Hackathon** (Oct 19–31, 2026).
+![Overview](docs/screenshots/02-overview.png)
 
-![Semantic search and related notes](docs/search.png)
+## The problem
 
-## Features
+Each AI tool keeps its own memory. Decisions made in one chat are gone in the next tool, so you end up explaining your
+project again every time. Engram keeps that context in one place, and every tool you connect reads from it.
 
-- **Semantic search** across all your notes, ranked by cosine similarity, with a match score for each result
-- **Related notes** panel on every note (nearest neighbours of the note's own vector)
-- Add, **edit** (re-embeds automatically) and delete notes, with subjects and tags
-- Subject filter chips that combine with semantic search
-- One-click **sample notes** (10 computer-science notes) to try it in seconds
-- Email/password **Appwrite Auth**, httpOnly session cookie, per-user row permissions
-- Search-first dark UI, `Ctrl/⌘ K` to focus search, loading, empty and error states
+**One memory. Two AI tools. Zero context loss.** If Claude Code saves a `DECISION` through one key, a second client using its
+own key sees it right away through `get_thread_context`.
 
-## How it uses Appwrite Databases
+## Concepts
 
-| Appwrite product | What NoteMind uses it for |
+| Term | What it is |
 | --- | --- |
-| **TablesDB** | Database `notemind`, table `notes` with typed columns: `userId` (varchar 36), `title` (varchar 200), `subject` (varchar 64), `tags` (varchar[] ), `content` (mediumtext), `embedding` (longtext, the 768-dim vector as JSON), `model` (varchar). Row security on, each row readable/writable only by its owner (`Role.user`). Indexes `by_user` (`userId`, `$createdAt` desc) and `by_user_subject` (`userId`, `subject`). Cursor pagination with `Query.select` to pull only the columns a request needs. |
-| **Embeddings** | `createTextEmbeddings` with the built-in **nomic-embed-text** model (768 dimensions) turns each note, and each search query, into a vector. No third-party AI service needed. Uses nomic's `search_document:` / `search_query:` task prefixes for better retrieval. |
-| **Auth** | Email/password accounts and sessions (SSR pattern: session secret in an httpOnly `a_session_<project>` cookie). |
-
-### Why not VectorsDB?
-VectorsDB would be the natural home for the vectors (HNSW index + `Query.vectorCosine`). On the Appwrite Cloud **Free** plan in
-the `sfo` region, creating a VectorsDB database returns *"No shared vectorsdb pool is configured… pass a specification"* and every
-dedicated specification is disabled for the plan. So NoteMind stores the vectors in **TablesDB** and ranks them on the server.
-The data model (one vector + metadata per note) maps 1:1 onto a VectorsDB collection, so moving the vectors there is a small,
-contained change in `src/lib/notes.ts` once a pool is available.
+| **Workspace** | Your account (Appwrite Auth). Every row in every table belongs to exactly one workspace. |
+| **Library** | A collection of documents (PDF, Markdown, TXT, pasted text). Each document is split into chunks of about 900 characters and embedded. |
+| **Thread** | Long-running context for a project or task: instructions, a summary, linked libraries and typed **memories**. |
+| **Memory** | A typed entry: `FACT`, `DECISION`, `PREFERENCE`, `PROJECT_STATE`, `TASK`, `INSTRUCTION`, `SUMMARY` or `DOCUMENT_REFERENCE`. |
+| **Key** | An MCP bearer token (`eng_…`) scoped to chosen libraries and threads. It is read-only or read and write, can expire and can be revoked. |
 
 ## Architecture
 
 ```
-Browser (Next.js client components)
-   │  fetch /api/*   (httpOnly session cookie)
-   ▼
-Next.js route handlers (server only, node-appwrite)
-   ├─ Auth:     Account.createEmailPasswordSession → cookie; Account.get per request
-   ├─ Write:    Embeddings.createTextEmbeddings → TablesDB.createRow / updateRow
-   └─ Search:   embed query → TablesDB.listRows (user's rows, select embedding)
-                → cosine similarity → adaptive cutoff → top matches
+ MCP clients (Claude Code, Inspector, SDKs, …)       Browser dashboard
+            │  POST /mcp  (Bearer eng_…)                  │ httpOnly Appwrite session cookie
+            ▼                                             ▼
+ ┌──────────────────────────── Next.js 16 on Vercel ────────────────────────────┐
+ │  /mcp  stateless Streamable HTTP (MCP TS SDK 1.32)    /api/*  route handlers │
+ │   └ key auth → scope check → tool → activity log       └ requireUser()       │
+ │                 lib/: libraries · threads · keys · vector-store (interface)  │
+ └───────────────────────────────┬──────────────────────────────────────────────┘
+                                 │ node-appwrite (server API key, server-side only)
+   Appwrite Cloud:  Auth · TablesDB (1 database, 7 tables) · Storage (1 bucket) · Embeddings (nomic-embed-text, 768-d)
 ```
 
-The Appwrite API key only ever lives in server environment variables. The browser never talks to Appwrite directly.
+**TablesDB tables** (all in database `notemind`; `scripts/setup-appwrite.mjs` creates them and is safe to run more than once):
 
-## Run it locally
+| Table | Key columns | Indexes |
+| --- | --- | --- |
+| `libraries` | userId, name, description, icon | userId+$createdAt |
+| `documents` | userId, libraryId, title, sourceType, mimeType, fileId, size, status (`uploaded/processing/indexed/failed`), error, chunkCount, content (mediumtext) | userId, libraryId |
+| `chunks` | userId, libraryId, documentId, index, text, **embedding (longtext JSON, 768 floats)**, model | libraryId, documentId, userId |
+| `threads` | userId, title, description, instructions, summary, libraryIds[] | userId+$updatedAt |
+| `memories` | userId, threadId, type, content, tags[], embedding, source (key name), keyId | threadId+$createdAt, userId |
+| `keys` | userId, name, **tokenHash (SHA-256, unique)**, prefix, allLibraries, libraryIds[], allThreads, threadIds[], canWrite, expiresAt, revokedAt, lastUsedAt | tokenHash (unique), userId |
+| `activity` | userId, keyId, keyName, action, detail, status (`ok/denied/error`) | userId+$createdAt, keyId |
+
+Original files are stored in the Storage bucket `documents` with owner-only file permissions. Deleting a document also deletes
+its chunks (bulk `deleteRows`) and its file. Deleting a library deletes all of its documents.
+
+### Retrieval
+
+`src/lib/vector-store.ts` defines a small `VectorStore` interface (`upsert`, `search`, `deleteByDocument`). The MCP server and the
+UI depend only on that interface. The current implementation, `TablesDBVectorStore`, stores each chunk's vector as a JSON
+string in a longtext column. At query time it embeds the query with Appwrite Embeddings (using `search_query:`/`search_document:`
+prefixes, which nomic needs) and ranks chunks from the allowed libraries using **85% cosine similarity + 15% keyword overlap**.
+Each result comes back with its `documentTitle` and `chunkIndex` as a citation.
+
+### VectorsDB vs TablesDB: why the adapter exists
+
+Appwrite **VectorsDB** is the natural home for these vectors. I tested it on this project: `vectorsDB.create()` returns
+`403 The maximum number of databases allowed for the selected plan has reached`, because the Free plan allows **one database**,
+and the TablesDB database already uses it. Engram therefore runs on TablesDB today. A `VectorsDBVectorStore` can be added
+behind the same interface on a paid plan, with no changes to the MCP server or UI. Brute-force ranking works well at demo
+scale (thousands of chunks). It is the first part to replace for large libraries.
+
+### Embedding storage test (768 dims in TablesDB)
+
+Run with `node scripts/probe-embedding-storage.mjs`. Measured on 31 Oct 2026 against Appwrite Cloud (sfo):
+
+| Test | Result |
+| --- | --- |
+| nomic-embed-text output | 768 dims |
+| JSON, rounded to 1e-6 (what Engram stores) | **7,204 bytes** per vector; reads back byte-identical; max abs error vs. original 5e-7 |
+| JSON, full precision | 9,457 bytes; reads back byte-identical |
+| Bulk `createRows` with 50 chunk rows (text + vector) | OK; all 50 parse back as 768-d vectors |
+
+Longtext columns are stored outside the fixed row-size budget, so a 7–10 KB string per row fits with plenty of room.
+Splitting a vector across columns isn't needed. On one run, a list request made immediately after a bulk insert returned
+fewer rows than were written. The same check passed on the rerun, so treat reads right after a bulk write as possibly lagging.
+Embedding calls take about 0.5 s per chunk and fail on batches of 64 or more, so Engram embeds in batches of 16 with 3 in parallel.
+
+## MCP server
+
+`POST /mcp`: Streamable HTTP, **stateless** (no `Mcp-Session-Id`; each request builds a fresh server), JSON responses.
+`GET`/`DELETE` return 405.
+
+**Tools:** `list_libraries`, `search_library` (semantic + keyword, with citations), `list_documents`, `get_document` (paged),
+`list_threads`, `get_thread_context` (instructions, summary, linked libraries, memories grouped by type), `save_memory`,
+`update_memory`, `search_memory`, `link_library`. Every tool has a zod schema, a description and read-only/write annotations.
+**Resources:** `engram://workspace`, `engram://libraries`, `engram://threads/{id}`, `engram://documents/{id}`.
+**Prompts:** `load_project_context`, `research_library`, `resume_previous_work`.
+
+### What was actually tested
+
+| Client | Version | What was verified |
+| --- | --- | --- |
+| MCP TypeScript SDK client (`scripts/acceptance.mjs`) | `@modelcontextprotocol/sdk` 1.32.2 | All 10 tools, resources, prompts, scope, revocation, cross-user isolation. 71 checks, local and production |
+| MCP Python SDK client (`scripts/mcp-python-client.py`) | `mcp` 1.30.0 | initialize, tools/list, save_memory, get_thread_context, read_resource, get_prompt against production |
+| MCP Inspector CLI | `@modelcontextprotocol/inspector` 2.13.0 | tools/list, tools/call search_library, resources/list, prompts/list against production |
+| Claude Code | 2.1.316 | `claude mcp add --transport http … --header "Authorization: Bearer …"`; `claude mcp list` reports **✔ Connected** (handshake only; no model session was run) |
+| curl | n/a | Protocol negotiation, stateless `tools/list` with no initialize, 401/405/406 responses |
+
+Protocol negotiation: the server answers `2024-11-05`, `2025-03-26`, `2025-06-18` and `2025-11-25` with the same version.
+For an unknown future version it answers with its latest (`2025-11-25`). The config snippets for **Cursor** and **VS Code** in the
+Connect page follow those vendors' MCP docs, but **I have not tested them against Engram**. The **Claude Desktop** snippet uses the
+community `mcp-remote` bridge and is also untested. When a request fails auth, MCP Inspector tries OAuth discovery. Engram
+doesn't implement OAuth, only bearer keys, so Inspector shows `auth_required` for a bad key.
+
+### Connect a client
 
 ```bash
-git clone <this repo> && cd notemind
+# Claude Code (tested)
+claude mcp add --transport http engram https://engram-mcp.vercel.app/mcp --header "Authorization: Bearer eng_…"
+```
+
+```jsonc
+// Cursor ~/.cursor/mcp.json (format from Cursor docs, untested)
+{ "mcpServers": { "engram": { "url": "https://engram-mcp.vercel.app/mcp", "headers": { "Authorization": "Bearer eng_…" } } } }
+```
+
+## Security model
+
+- **Keys:** 192-bit random tokens (`eng_` + base64url). The full key is shown once. Only the **SHA-256 hash** is stored and
+  looked up through a unique index. The list API never returns the hash or the key.
+- **Every MCP request** checks the key's hash, then that it hasn't been revoked or expired, then the rate limit (60/min per key,
+  per server instance), and then the scope for each tool. Calls outside the key's scope fail with a tool error and are logged
+  as `denied`. Read-only keys can't write.
+- **Ownership on every operation.** All data access runs on the server with the Appwrite API key, so the app checks
+  ownership itself. `getOwned()` loads a row and rejects it unless `row.userId === caller`. Indirect lookups re-check ownership
+  at every step. For example, `get_document` loads the document, checks its owner, then checks the key's scope for the
+  document's libraryId. `update_memory` goes from the memory to its thread, then checks ownership and scope. `link_library`
+  checks both rows. Lists of IDs (thread libraryIds, key scopes, search libraryIds) are filtered to the caller's own rows
+  before they are stored or used.
+  Rows and files also carry owner-only Appwrite permissions (`read/update/delete: user:<id>`) as a second layer.
+- **Rotate** revokes the old key and issues a new key with the same scope. Activity (tool, key, outcome) is logged per key and
+  shown in the dashboard. `lastUsedAt` is updated on each use.
+- **Dashboard sessions:** Appwrite email/password sessions are kept in an httpOnly, `SameSite=Strict`, Secure cookie.
+- `scripts/acceptance.mjs` covers cross-user attacks: user B reuses user A's real library, document, thread, memory and key
+  IDs against every dashboard route and MCP tool and resource. Every one is rejected, and A's data is checked afterwards to
+  confirm nothing changed.
+
+## Run it
+
+```bash
 npm install
-cp .env.example .env.local      # fill in APPWRITE_API_KEY
-node scripts/setup-appwrite.mjs # creates the database, table, columns and indexes (idempotent)
-npm run dev                     # http://localhost:3000
+cp .env.example .env.local            # fill in the project id + server API key
+node --env-file=.env.local scripts/setup-appwrite.mjs   # creates the tables, indexes and bucket (safe to re-run)
+npm run dev
+BASE=http://localhost:3000 node --env-file=.env.local scripts/acceptance.mjs   # 71 end-to-end checks
+BASE=http://localhost:3000 node scripts/seed-demo.mjs                          # demo workspace → DEMO_ACCOUNT.txt
 ```
 
-The API key needs these scopes: `users.write`, `sessions.write`, `databases.write`, `tables.write`, `columns.write`,
-`indexes.write`, `rows.read`, `rows.write`, `embeddings.write`.
-
-## Tech stack
-Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · node-appwrite 31 · Appwrite Cloud · Vercel
-
-## Project structure
-```
-src/lib/appwrite.ts      admin + session clients
-src/lib/notes.ts         embeddings, CRUD, semantic search, related notes
-src/app/api/**           auth, notes, search, seed routes
-src/components/          AuthScreen, NotesApp (search UI, note panel, editor modal)
-scripts/setup-appwrite.mjs  provisions the Appwrite resources
-```
+Deploy: `vercel deploy --prod` with `APPWRITE_API_KEY` set as a server-only env var.
 
 ## Screenshots
-| Sign in | Add a note | Search a new topic |
-| --- | --- | --- |
-| ![](docs/auth.png) | ![](docs/new-note.png) | ![](docs/new-search.png) |
+
+| | |
+| --- | --- |
+| ![Landing](docs/screenshots/01-landing.png) | ![Libraries](docs/screenshots/03-libraries.png) |
+| ![Semantic search with citations](docs/screenshots/04-library-search.png) | ![Thread with memories from two AI tools](docs/screenshots/05-thread.png) |
+| ![Connect](docs/screenshots/06-connect.png) | ![Key created + live connection test](docs/screenshots/07-connect-key-test.png) |
+
+## Limits and honest notes
+
+- The Free plan allows one database and one bucket, so there is no VectorsDB (see above).
+- Documents are indexed inside the upload request (up to 300 s on Vercel). There is no background queue. Each document is
+  limited to 10 MB and 400 chunks.
+- The rate limit is held in memory, per serverless instance. It isn't global.
+- Bearer keys only. There is no OAuth flow, so hosted connectors that require OAuth (e.g. claude.ai custom connectors) can't use Engram directly.
 
 ## License
+
 MIT

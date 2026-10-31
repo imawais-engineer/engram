@@ -45,7 +45,8 @@ console.log('Engram acceptance against', BASE);
 console.log('\n1. Accounts');
 const A = session(), B = session();
 const emailA = `accept-a+${stamp}@engram.test`, emailB = `accept-b+${stamp}@engram.test`;
-check('register user A', (await A('POST', '/api/auth/signup', { name: 'Tester A', email: emailA, password: 'Engram2026!x' })).ok);
+const ra = await A('POST', '/api/auth/signup', { name: 'Tester A', email: emailA, password: 'Engram2026!x' });
+check('register user A', ra.ok, JSON.stringify(ra));
 check('register user B', (await B('POST', '/api/auth/signup', { name: 'Tester B', email: emailB, password: 'Engram2026!x' })).ok);
 const meA = await A('GET', '/api/me');
 check('session works', meA.user?.email === emailA);
@@ -135,6 +136,37 @@ check('user B search over A library returns nothing', ((await x.call('search_lib
 check('user B cannot write to A thread', (await x.call('save_memory', { threadId: thread.id, type: 'FACT', content: 'intrusion' })).isError);
 check('dashboard API blocks cross-user', (await B('GET', `/api/threads/${thread.id}`)).__status === 404);
 check('user B cannot create key scoped to A library', (await B('POST', '/api/keys', { name: 'sneaky', libraryIds: [lib.id] })).key?.libraryIds?.length === 0);
+
+// Indirect-ID attacks: user B uses A's real ids everywhere (dashboard API + MCP).
+const memA = saved.data.saved.id;
+const st = (r) => r.__status;
+check('B cannot GET A library', st(await B('GET', `/api/libraries/${lib.id}`)) === 404);
+check('B cannot PATCH A library', st(await B('PATCH', `/api/libraries/${lib.id}`, { name: 'pwned' })) === 404);
+check('B cannot DELETE A library', st(await B('DELETE', `/api/libraries/${lib.id}`)) === 404);
+check('B cannot upload into A library', st(await B('POST', `/api/libraries/${lib.id}/documents`, { title: 'x', content: 'injected' })) === 404);
+check('B cannot GET A document', st(await B('GET', `/api/documents/${txt.document.id}`)) === 404);
+check('B cannot DELETE A document', st(await B('DELETE', `/api/documents/${txt.document.id}`)) === 404);
+check('B cannot PATCH A thread', st(await B('PATCH', `/api/threads/${thread.id}`, { title: 'pwned' })) === 404);
+check('B cannot DELETE A thread', st(await B('DELETE', `/api/threads/${thread.id}`)) === 404);
+check('B cannot add memory to A thread', st(await B('POST', `/api/threads/${thread.id}/memories`, { type: 'FACT', content: 'x' })) === 404);
+check('B cannot PATCH A memory', st(await B('PATCH', `/api/memories/${memA}`, { content: 'pwned' })) === 404);
+check('B cannot DELETE A memory', st(await B('DELETE', `/api/memories/${memA}`)) === 404);
+check('B cannot revoke A key', st(await B('POST', `/api/keys/${kR.key.id}/revoke`)) === 404);
+check('B cannot rotate A key', st(await B('POST', `/api/keys/${kR.key.id}/rotate`)) === 404);
+check('B cannot delete A key', st(await B('DELETE', `/api/keys/${kR.key.id}`)) === 404);
+check('B dashboard search with A library ids returns nothing', ((await B('POST', '/api/search', { query: 'rider locations', libraryIds: [lib.id] })).results?.length ?? -1) === 0);
+const bThread = (await B('POST', '/api/threads', { title: 'B thread', libraryIds: [lib.id] })).thread;
+check('B thread cannot link A library (ids filtered)', bThread?.libraryIds?.length === 0);
+const x2 = await mcp((await B('POST', '/api/keys', { name: 'B all 2', allLibraries: true, allThreads: true })).token);
+check('B MCP update_memory on A memory blocked', (await x2.call('update_memory', { memoryId: memA, content: 'pwned' })).isError);
+check('B MCP link_library A library → B thread blocked', (await x2.call('link_library', { threadId: bThread.id, libraryId: lib.id })).isError);
+check('B MCP list_documents of A library empty', ((await x2.call('list_documents', { libraryId: lib.id })).data?.documents?.length ?? 0) === 0);
+check('B MCP search_memory sees no A memories', ((await x2.call('search_memory', { query: 'SMS gateway' })).data?.results?.length ?? 0) === 0);
+let resBlocked = 0;
+for (const uri of [`engram://threads/${thread.id}`, `engram://documents/${txt.document.id}`]) { try { await x2.client.readResource({ uri }); } catch { resBlocked++; } }
+check('B MCP cannot read A resources', resBlocked === 2);
+const aAfter = await A('GET', `/api/threads/${thread.id}`);
+check('A data untouched after attacks', aAfter.thread?.title === 'Atlas MVP build' && aAfter.memories?.some((m) => m.id === memA && m.content.startsWith('Use the Jazz')) && (await A('GET', `/api/keys`)).keys.find((k) => k.id === kR.key.id)?.status === 'active');
 
 console.log('\n6. Revoke / rotate / activity');
 await A('POST', `/api/keys/${kA.key.id}/revoke`);

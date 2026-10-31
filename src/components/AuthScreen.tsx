@@ -38,13 +38,14 @@ export default function AuthScreen() {
           </h1>
           <p className="mt-5 max-w-md text-zinc-400">
             Stop re-explaining your project to every assistant. Engram keeps your documents, decisions and project context in one place,
-            and any MCP-compatible AI tool can read and add to it through a single secure connection.
+            and MCP clients you connect can read and add to it through one secure endpoint.
           </p>
           <ul className="mt-8 space-y-3 text-sm text-zinc-300">
             {[
               "Libraries: PDFs, Markdown and notes, chunked and embedded with Appwrite Embeddings",
-              "Threads: typed memories (decisions, facts, tasks) that carry across Cursor, Claude and VS Code",
+              "Threads: typed memories (decisions, facts, tasks) that carry across your AI tools",
               "Keys: scoped, revocable MCP bearer tokens, with every tool call logged",
+              "Tested with Claude Code, MCP Inspector and the TypeScript and Python MCP SDKs",
               "Built on Appwrite Auth, TablesDB and Storage",
             ].map((t) => (
               <li key={t} className="flex items-start gap-3">

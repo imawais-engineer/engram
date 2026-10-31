@@ -117,7 +117,7 @@ export default function LibraryView({ id }: { id: string }) {
       {uploading.map((n) => <div key={n} className="mb-3"><Card className="flex items-center justify-between p-3"><span className="text-sm text-zinc-300">{n}</span><Spinner label="Extracting, chunking and embedding…" /></Card></div>)}
       <ErrorNote error={uploadErr} />
 
-      {!documents.length && !uploading.length && <Empty icon="📄" title="No documents yet" body="Upload a spec, architecture doc or meeting notes to make them searchable from every AI tool." />}
+      {!documents.length && !uploading.length && <Empty icon="📄" title="No documents yet" body="Upload a spec, architecture doc or meeting notes to make them searchable from your connected AI tools." />}
       {documents.length > 0 && (
         <Card className="divide-y divide-white/5 overflow-hidden">
           {documents.map((d) => (
