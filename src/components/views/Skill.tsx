@@ -78,7 +78,7 @@ function SkillEditor({ id, s, flash, onSkill }: { id: string; s: Skill; flash: s
                     <button onClick={() => setPeek(peek?.id === v.id ? null : v)} className="mono-app text-lilac hover:text-cream">{peek?.id === v.id ? "Hide" : "View"}</button>
                     {v.version !== s.version && <button disabled={!!busy} onClick={() => restore(v.version)} className="mono-app text-pink hover:text-cream">Restore</button>}
                   </div>
-                  {peek?.id === v.id && <pre className="prose-pre mt-2 max-h-60 overflow-auto rounded-md bg-black/50 p-2 font-mono text-[12px] text-zinc-300">{v.instructions || "(empty)"}</pre>}
+                  {peek?.id === v.id && <pre className="prose-pre mt-2 max-h-60 overflow-auto rounded-md bg-[#03040b]/50 p-2 font-mono text-[12px] text-zinc-300">{v.instructions || "(empty)"}</pre>}
                 </div>
               ))}
             </div>

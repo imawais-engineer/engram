@@ -44,9 +44,9 @@ type BtnProps = { children: ReactNode; onClick?: () => void; variant?: "primary"
 export function Btn({ children, onClick, variant = "primary", disabled, type = "button", small, className = "", title }: BtnProps) {
   const base = `inline-flex items-center justify-center gap-1.5 font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed ${variant === "primary" ? "rounded-full" : "rounded-lg"} ${small ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm"}`;
   const styles = {
-    primary: "bg-pink text-plum hover:brightness-110",
-    outline: "border border-lilac/40 text-cream hover:border-lilac hover:bg-violet/30",
-    ghost: "text-lilac hover:bg-violet/30 hover:text-cream",
+    primary: "btn-grad",
+    outline: "border border-lilac/25 bg-white/[0.03] text-cream hover:border-lilac/60 hover:bg-violet/20",
+    ghost: "text-lilac hover:bg-white/[0.06] hover:text-cream",
     danger: "border border-red-500/30 text-red-300 hover:bg-red-500/10",
   }[variant];
   return <button type={type} title={title} onClick={onClick} disabled={disabled} className={`${base} ${styles} ${className}`}>{children}</button>;
@@ -71,7 +71,7 @@ export function PageHeader({ title, subtitle, action, eyebrow }: { title: ReactN
 
 export function Empty({ icon, title, body, action }: { icon: string; title: string; body: string; action?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl border border-dashed border-lilac/30 px-6 py-14 text-center">
+    <div className="flex flex-col items-center rounded-2xl border border-dashed border-lilac/25 bg-white/[0.02] px-6 py-14 text-center">
       <div className="mb-3 text-3xl">{icon}</div>
       <div className="font-medium text-zinc-200">{title}</div>
       <p className="mt-1 max-w-sm text-sm text-zinc-500">{body}</p>
@@ -83,14 +83,14 @@ export function Empty({ icon, title, body, action }: { icon: string; title: stri
 export function Spinner({ label }: { label?: string }) {
   return (
     <div className="flex items-center gap-2 text-sm text-zinc-500">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-pink" />
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-cyan" />
       {label}
     </div>
   );
 }
 
 export function Skeleton({ rows = 3 }: { rows?: number }) {
-  return <div className="space-y-3">{Array.from({ length: rows }, (_, i) => <div key={i} className="h-16 animate-pulse rounded-xl bg-zinc-900/80" />)}</div>;
+  return <div className="space-y-3">{Array.from({ length: rows }, (_, i) => <div key={i} className="h-16 animate-pulse rounded-xl bg-white/[0.05]" />)}</div>;
 }
 
 export function ErrorNote({ error }: { error: string }) {
@@ -99,7 +99,7 @@ export function ErrorNote({ error }: { error: string }) {
 }
 
 export function Badge({ children, tone = "zinc" }: { children: ReactNode; tone?: "zinc" | "green" | "amber" | "red" | "violet" | "cyan" }) {
-  const t = { zinc: "border-lilac/30 text-zinc-300", green: "border-emerald-400/40 text-emerald-300", amber: "border-amber-400/40 text-amber-300", red: "border-red-400/40 text-red-300", violet: "border-pink/50 text-violet-300", cyan: "border-lilac/50 text-lilac" }[tone];
+  const t = { zinc: "border-lilac/25 bg-white/[0.03] text-zinc-300", green: "border-emerald-400/40 text-emerald-300", amber: "border-amber-400/40 text-amber-300", red: "border-red-400/40 text-red-300", violet: "border-violet-300/40 bg-violet/10 text-violet-300", cyan: "border-cyan-300/40 bg-cyan-500/10 text-cyan-300" }[tone];
   return <span className={`mono-app inline-flex items-center gap-1 rounded-full border px-2 py-0.5 ${t}`}>{children}</span>;
 }
 
@@ -112,8 +112,8 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm md:items-center" onMouseDown={onClose}>
-      <div className={`glass fade-up my-8 w-full ${wide ? "max-w-3xl" : "max-w-lg"} rounded-2xl bg-panel p-6 shadow-2xl`} onMouseDown={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#03040b]/70 p-4 backdrop-blur-md md:items-center" onMouseDown={onClose}>
+      <div className={`glass glass-strong fade-up my-8 w-full ${wide ? "max-w-3xl" : "max-w-lg"} rounded-2xl p-6 shadow-2xl`} onMouseDown={(e) => e.stopPropagation()}>
         <div className="mb-5 flex items-center justify-between">
           <h2 className="poster-sm text-cream">{title}</h2>
           <button onClick={onClose} className="rounded-md px-2 text-xl leading-none text-zinc-500 hover:text-zinc-200" aria-label="Close">×</button>
@@ -144,14 +144,14 @@ export function CopyBtn({ text, label = "Copy" }: { text: string; label?: string
 }
 
 export function Code({ children }: { children: string }) {
-  return <pre className="scroll-thin overflow-x-auto rounded-lg border border-zinc-800 bg-black/60 p-3 font-mono text-[12px] leading-relaxed text-zinc-300">{children}</pre>;
+  return <pre className="scroll-thin overflow-x-auto rounded-xl border border-lilac/15 bg-[#03040b]/60 p-3 font-mono text-[12px] leading-relaxed text-zinc-300">{children}</pre>;
 }
 
 export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
   return (
     <Card className="p-4">
       <div className="mono-app text-lilac">{label}</div>
-      <div className="mt-2 font-display text-[34px] font-bold leading-none tracking-[-0.035em] text-cream">{value}</div>
+      <div className="mt-2 font-display text-[34px] font-semibold leading-none tracking-[-0.04em] text-grad">{value}</div>
       {hint && <div className="mono-app mt-2 text-zinc-500">{hint}</div>}
     </Card>
   );
@@ -171,5 +171,5 @@ export const TYPE_STYLE: Record<string, { label: string; tone: "zinc" | "green" 
 
 export function Initials({ name, highlight }: { name: string; highlight?: boolean }) {
   const ini = name.split(/[^\p{L}\p{N}]+/u).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("") || "?";
-  return <span aria-hidden className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold ${highlight ? "bg-plum text-pink" : "bg-violet text-cream"}`}>{ini}</span>;
+  return <span aria-hidden className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold ${highlight ? "btn-grad" : "bg-gradient-to-br from-violet to-indigo text-white ring-1 ring-white/15"}`}>{ini}</span>;
 }

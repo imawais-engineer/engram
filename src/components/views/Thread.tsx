@@ -49,9 +49,9 @@ export default function ThreadView({ id }: { id: string }) {
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <section className="min-w-0">
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <button onClick={() => setFilter("")} className={`rounded-full px-3 py-1 text-xs ${!filter ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"}`}>All {memories.length}</button>
+            <button onClick={() => setFilter("")} className={`rounded-full px-3 py-1 text-xs ${!filter ? "chip-active" : "text-zinc-400 hover:text-zinc-200"}`}>All {memories.length}</button>
             {MEMORY_TYPES.filter((t) => counts[t]).map((t) => (
-              <button key={t} onClick={() => setFilter(t)} className={`rounded-full px-3 py-1 text-xs ${filter === t ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"}`}>{TYPE_STYLE[t].label} {counts[t]}</button>
+              <button key={t} onClick={() => setFilter(t)} className={`rounded-full px-3 py-1 text-xs ${filter === t ? "chip-active" : "text-zinc-400 hover:text-zinc-200"}`}>{TYPE_STYLE[t].label} {counts[t]}</button>
             ))}
             <div className="ml-auto"><Btn small onClick={() => setEditing("new")}>+ Add memory</Btn></div>
           </div>
@@ -125,7 +125,7 @@ function MemoryForm({ threadId, memory, onDone }: { threadId: string; memory?: M
   return (
     <form onSubmit={submit}>
       <Field label="Type">
-        <div className="flex flex-wrap gap-1.5">{MEMORY_TYPES.map((t) => <button type="button" key={t} onClick={() => setType(t)} className={`rounded-full border px-2.5 py-1 text-xs ${type === t ? "border-brand bg-brand/20 text-white" : "border-zinc-800 text-zinc-400"}`}>{TYPE_STYLE[t].icon} {TYPE_STYLE[t].label}</button>)}</div>
+        <div className="flex flex-wrap gap-1.5">{MEMORY_TYPES.map((t) => <button type="button" key={t} onClick={() => setType(t)} className={`rounded-full border px-2.5 py-1 text-xs ${type === t ? "chip-active border-transparent" : "border-lilac/20 text-zinc-400"}`}>{TYPE_STYLE[t].icon} {TYPE_STYLE[t].label}</button>)}</div>
       </Field>
       <Field label="Content"><textarea className="input min-h-32" autoFocus required value={content} onChange={(e) => setContent(e.target.value)} placeholder="We chose Appwrite Realtime for rider locations instead of polling." /></Field>
       <Field label="Tags" hint="Comma separated"><input className="input" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="architecture, realtime" /></Field>

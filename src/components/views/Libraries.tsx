@@ -25,7 +25,7 @@ export function LibraryForm({ initial, onDone }: { initial?: Partial<Lib>; onDon
   return (
     <form onSubmit={submit}>
       <Field label="Icon">
-        <div className="flex flex-wrap gap-1.5">{ICONS.map((i) => <button type="button" key={i} onClick={() => setIcon(i)} className={`h-9 w-9 rounded-lg text-lg ${icon === i ? "bg-brand/25 ring-1 ring-brand" : "bg-zinc-900 hover:bg-zinc-800"}`}>{i}</button>)}</div>
+        <div className="flex flex-wrap gap-1.5">{ICONS.map((i) => <button type="button" key={i} onClick={() => setIcon(i)} className={`h-9 w-9 rounded-lg text-lg ${icon === i ? "bg-violet/30 ring-1 ring-violet-300" : "bg-white/[0.05] hover:bg-white/[0.09]"}`}>{i}</button>)}</div>
       </Field>
       <Field label="Name"><input className="input" autoFocus required value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Project Atlas" /></Field>
       <Field label="Description" hint="Shown to AI tools so they know when to search this library."><textarea className="input min-h-20" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Specs, architecture notes and meeting notes for Atlas" /></Field>
@@ -48,7 +48,7 @@ export default function LibrariesView() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {data.libraries.map((l) => (
             <Link key={l.id} href={`/libraries/${l.id}`}>
-              <Card className="h-full p-5 transition hover:border-brand/40 hover:bg-zinc-900/60">
+              <Card className="h-full p-5 transition hover:-translate-y-0.5 hover:border-violet-300/40 hover:shadow-[0_20px_60px_-25px_rgba(124,92,255,0.7)]">
                 <div className="flex items-start justify-between">
                   <div className="text-2xl">{l.icon}</div>
                   <span className="mono-app text-zinc-500">{timeAgo(l.updatedAt)}</span>

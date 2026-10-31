@@ -30,7 +30,7 @@ export default function SkillsView() {
       {data && data.skills.length > 0 && (
         <div className="mb-4 flex gap-1.5">
           {(["", "published", "draft"] as const).map((f) => (
-            <button key={f || "all"} onClick={() => setFilter(f)} className={`mono-app rounded-full px-3 py-1.5 ${filter === f ? "bg-violet text-cream" : "text-lilac hover:text-cream"}`}>
+            <button key={f || "all"} onClick={() => setFilter(f)} className={`mono-app rounded-full px-3 py-1.5 ${filter === f ? "chip-active" : "text-lilac hover:text-cream"}`}>
               {f || "All"} {f ? data.skills.filter((s) => s.status === f).length : data.skills.length}
             </button>
           ))}

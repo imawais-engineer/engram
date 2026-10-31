@@ -48,14 +48,14 @@ export function ConnectPanel({ token, keyName }: { token: string; keyName: strin
       <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
         <div className="mb-2 text-sm font-medium text-amber-200">Copy your key for “{keyName}” now. It won’t be shown again.</div>
         <div className="flex items-center gap-2">
-          <code className="min-w-0 flex-1 truncate rounded-md bg-black/60 px-3 py-2 font-mono text-[13px] text-white">{token}</code>
+          <code className="min-w-0 flex-1 truncate rounded-md bg-[#03040b]/60 px-3 py-2 font-mono text-[13px] text-white">{token}</code>
           <CopyBtn text={token} />
         </div>
         <p className="mt-2 text-xs text-amber-200/70">Engram stores only a peppered HMAC-SHA256 hash of this key.</p>
       </div>
       <div className="mb-2 flex items-center justify-between text-sm"><span className="text-zinc-400">MCP endpoint</span><span className="font-mono text-zinc-200">{url}</span></div>
       <div className="mb-3 mt-4 flex flex-wrap gap-1">
-        {list.map((x) => <button key={x.id} onClick={() => setTab(x.id)} className={`rounded-lg px-3 py-1.5 text-xs ${tab === x.id ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"}`}>{x.label}</button>)}
+        {list.map((x) => <button key={x.id} onClick={() => setTab(x.id)} className={`rounded-lg px-3 py-1.5 text-xs ${tab === x.id ? "chip-active" : "text-zinc-400 hover:text-zinc-200"}`}>{x.label}</button>)}
       </div>
       <div className="mb-2 flex items-center justify-between gap-2">
         <span className="text-xs text-zinc-500">{s.file} · {s.note}</span>

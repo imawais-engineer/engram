@@ -102,7 +102,7 @@ export default function LibraryView({ id }: { id: string }) {
         onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
         onDragLeave={() => setDrag(false)}
         onDrop={(e) => { e.preventDefault(); setDrag(false); upload(e.dataTransfer.files); }}
-        className={`mb-6 flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed px-6 py-8 text-center transition sm:flex-row sm:justify-between sm:text-left ${drag ? "border-brand bg-brand/10" : "border-zinc-800"}`}
+        className={`mb-6 flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed px-6 py-8 text-center transition sm:flex-row sm:justify-between sm:text-left ${drag ? "border-cyan-300 bg-cyan-500/10" : "border-lilac/25 bg-white/[0.02]"}`}
       >
         <div>
           <div className="font-medium text-zinc-200">Add knowledge</div>
@@ -122,7 +122,7 @@ export default function LibraryView({ id }: { id: string }) {
         <Card className="divide-y divide-lilac/15 overflow-hidden">
           {documents.map((d) => (
             <div key={d.id} className="flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02]">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-zinc-900 text-[10px] font-semibold uppercase text-zinc-400">{d.mimeType.includes("pdf") ? "PDF" : d.sourceType === "upload" ? "FILE" : "TXT"}</div>
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-lilac/15 bg-white/[0.05] text-[10px] font-semibold uppercase text-zinc-400">{d.mimeType.includes("pdf") ? "PDF" : d.sourceType === "upload" ? "FILE" : "TXT"}</div>
               <button onClick={() => setViewing(d.id)} className="min-w-0 flex-1 text-left">
                 <div className="truncate text-sm font-medium text-zinc-100">{d.title}</div>
                 <div className="mono-app mt-0.5 text-zinc-500">{d.chunkCount} chunks · {fmtSize(d.size)} · {timeAgo(d.createdAt)}{d.error && <span className="text-red-400"> · {d.error}</span>}</div>
@@ -177,7 +177,7 @@ function DocViewer({ id }: { id: string }) {
         <Badge>{d.chunkCount} chunks</Badge>
         <span className="font-mono text-[11px] text-zinc-500">engram://documents/{d.id}</span>
       </div>
-      <pre className="prose-pre scroll-thin max-h-[60vh] overflow-y-auto rounded-lg bg-black/50 p-4 font-sans text-sm leading-relaxed text-zinc-300">{d.content || "(no extracted text)"}</pre>
+      <pre className="prose-pre scroll-thin max-h-[60vh] overflow-y-auto rounded-lg bg-[#03040b]/50 p-4 font-sans text-sm leading-relaxed text-zinc-300">{d.content || "(no extracted text)"}</pre>
     </div>
   );
 }

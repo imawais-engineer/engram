@@ -12,7 +12,7 @@ export function LibraryPicker({ libs, value, onChange }: { libs: Lib[]; value: s
     <div className="flex flex-wrap gap-2">
       {libs.map((l) => {
         const on = value.includes(l.id);
-        return <button type="button" key={l.id} onClick={() => onChange(on ? value.filter((x) => x !== l.id) : [...value, l.id])} className={`rounded-full border px-3 py-1 text-sm transition ${on ? "border-brand bg-brand/20 text-white" : "border-zinc-800 text-zinc-400 hover:border-zinc-600"}`}>{l.icon} {l.name}</button>;
+        return <button type="button" key={l.id} onClick={() => onChange(on ? value.filter((x) => x !== l.id) : [...value, l.id])} className={`rounded-full border px-3 py-1 text-sm transition ${on ? "chip-active border-transparent" : "border-lilac/20 text-zinc-400 hover:border-lilac/50"}`}>{l.icon} {l.name}</button>;
       })}
     </div>
   );
@@ -48,11 +48,11 @@ export default function ThreadsView() {
         <div className="space-y-3">
           {data.threads.map((t) => (
             <Link key={t.id} href={`/threads/${t.id}`} className="block">
-              <Card className="flex flex-col gap-2 p-5 transition hover:border-brand/40 hover:bg-zinc-900/60 sm:flex-row sm:items-center sm:justify-between">
+              <Card className="flex flex-col gap-2 p-5 transition hover:-translate-y-0.5 hover:border-violet-300/40 hover:shadow-[0_20px_60px_-25px_rgba(124,92,255,0.7)] sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                   <div className="font-medium text-white">{t.title}</div>
                   <div className="mt-0.5 truncate text-sm text-zinc-400">{t.description || "No description"}</div>
-                  {t.libraryIds.length > 0 && <div className="mt-2 flex flex-wrap gap-1.5">{t.libraryIds.map((id) => libName.get(id) && <span key={id} className="rounded-full bg-zinc-900 px-2 py-0.5 text-xs text-zinc-400">{libName.get(id)}</span>)}</div>}
+                  {t.libraryIds.length > 0 && <div className="mt-2 flex flex-wrap gap-1.5">{t.libraryIds.map((id) => libName.get(id) && <span key={id} className="rounded-full border border-lilac/15 bg-white/[0.04] px-2 py-0.5 text-xs text-zinc-400">{libName.get(id)}</span>)}</div>}
                 </div>
                 <div className="flex shrink-0 gap-4 mono-app text-zinc-500"><span>{t.memoryCount} memories</span><span>active {timeAgo(t.updatedAt)}</span></div>
               </Card>
