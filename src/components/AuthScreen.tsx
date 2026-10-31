@@ -2,9 +2,10 @@
 import { useState } from "react";
 import Logo from "./Logo";
 import { Initials } from "./ui";
+import { ClientTabs, CommandCheatsheet, SetupAgentPrompt, StarterPrompt, TestIt } from "./ConnectPrompts";
 
 const NAV = ["Overview", "Libraries", "Threads", "Skills", "Agents", "Connect"];
-const anchors: Record<string, string> = { Overview: "#top", Libraries: "#features", Threads: "#how", Skills: "#features", Agents: "#features", Connect: "#clients" };
+const anchors: Record<string, string> = { Overview: "#top", Libraries: "#features", Threads: "#how", Skills: "#features", Agents: "#features", Connect: "#connect-ai" };
 
 const CLIENTS = [
   { name: "Claude Code", ini: "CC", ver: "v2.1.316", what: "Remote HTTP server added with a bearer header. mcp list reports Connected." },
@@ -117,6 +118,26 @@ export default function AuthScreen() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* Connect your AI: copyable configs, starter prompt and command cheatsheet */}
+        <section id="connect-ai" aria-labelledby="connect-ai-title" className="mx-auto max-w-6xl px-5 pt-16">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <div className="mono text-lilac">Copy · paste · ask</div>
+              <h2 id="connect-ai-title" className="poster-sm mt-4 max-w-[20ch] text-cream">Connect your AI in <span className="text-grad">60 seconds</span></h2>
+            </div>
+            <p className="body-s max-w-md text-zinc-300">1. Create a key in Connect. 2. Copy the config for your client, or hand the setup prompt to your coding agent. 3. Run the test prompt, then talk to <span className="font-mono text-cream">@Engram</span>.</p>
+          </div>
+          <div className="mt-8 grid gap-3 lg:grid-cols-[1.25fr_1fr] [&>*]:min-w-0">
+            <ClientTabs />
+            <SetupAgentPrompt />
+          </div>
+          <div className="mt-3 grid gap-3 lg:grid-cols-2 [&>*]:min-w-0">
+            <TestIt />
+            <StarterPrompt />
+          </div>
+          <div className="mt-3"><CommandCheatsheet /></div>
         </section>
 
         {/* How it works */}

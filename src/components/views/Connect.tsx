@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { api, Badge, Btn, Card, Code, CopyBtn, Empty, ErrorNote, Field, Modal, PageHeader, Skeleton, Spinner, timeAgo, useLoad } from "../ui";
 import { LibraryPicker } from "./Threads";
+import { CommandCheatsheet, SetupAgentPrompt, StarterPrompt, TestIt } from "../ConnectPrompts";
 
 type Key = { id: string; name: string; prefix: string; allLibraries: boolean; libraryIds: string[]; allThreads: boolean; threadIds: string[]; canWrite: boolean; expiresAt: string | null; revokedAt: string | null; lastUsedAt: string | null; createdAt: string; status: string };
 type Lib = { id: string; name: string; icon: string };
@@ -171,6 +172,13 @@ export default function ConnectView() {
           </Card>
         </aside>
       </div>
+
+      <section aria-label="Prompts for connected AI tools" className="mt-8 grid gap-4 lg:grid-cols-2 [&>*]:min-w-0">
+        <SetupAgentPrompt />
+        <TestIt />
+        <StarterPrompt />
+        <CommandCheatsheet />
+      </section>
 
       <Modal open={open} onClose={() => setOpen(false)} title="New key">
         <KeyForm libs={libs.data?.libraries ?? []} threads={threads.data?.threads ?? []} onDone={(token, name) => { setOpen(false); setIssued({ token, name }); reloadAll(); }} />

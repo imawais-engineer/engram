@@ -187,6 +187,22 @@ claude mcp add --transport http engram https://engram-ai.appwrite.network/mcp --
 { "mcpServers": { "engram": { "url": "https://engram-ai.appwrite.network/mcp", "headers": { "Authorization": "Bearer engram_…" } } } }
 ```
 
+## Connect your AI (copy-paste prompts)
+
+The landing page section **Connect your AI in 60 seconds** and the logged-in **Connect** page carry the same copyable blocks
+(source: `src/components/ConnectPrompts.tsx`):
+
+- **Per-client config** for Claude Code, Cursor, Gemini CLI, VS Code, Codex CLI, Windsurf and Claude Desktop (via `mcp-remote`),
+  taken from `docs/COMPATIBILITY.md` with a `YOUR_ENGRAM_KEY` placeholder. Each tab says whether it was tested or only documented.
+- **Setup prompt** to hand to an AI coding agent so it adds the `engram` server to its own MCP config and verifies it.
+- **Connected? Test it**: a single prompt that runs `get_workspace`, `list_skills`, `list_libraries`, `list_agents` and
+  `get_agent_context`, with a "what you should see" note for each step.
+- **Starter prompt** that tells the AI to call Engram's tools when you say `@Engram`, plus a **command cheatsheet**
+  (`@Engram list all my skills` → `list_skills`, `@Engram list my libraries and projects` → `list_libraries` + `list_threads`, …).
+
+ChatGPT apps and claude.ai custom connectors need OAuth, which Engram doesn't have yet, so the page labels them as not supported.
+The prompts only work in a client that already has Engram's MCP tools attached.
+
 ## Security model
 
 - **Keys:** 256-bit random tokens (`engram_` + base64url). The full key is shown once. Only an **HMAC-SHA256 hash keyed with a
@@ -225,7 +241,7 @@ node --env-file=.env.local scripts/setup-appwrite.mjs   # creates the tables, in
 npm run dev
 BASE=http://localhost:3000 node --env-file=.env.local scripts/acceptance.mjs     # 71 checks: memory core
 BASE=http://localhost:3000 node --env-file=.env.local scripts/acceptance-v2.mjs  # 78 checks: skills, agents, keys, Origin
-BASE=http://localhost:3000 node scripts/seed-demo.mjs                          # demo workspace → DEMO_ACCOUNT.txt
+BASE=http://localhost:3000 node --env-file=.env.local scripts/seed-demo.mjs   # demo workspace → DEMO_ACCOUNT.txt (RESET=1 to recreate)
 ```
 
 Deploy: **Appwrite Sites**, connected to this repo's `main` branch, so every push builds and activates a deployment.

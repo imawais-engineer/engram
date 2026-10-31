@@ -11,9 +11,12 @@ async def main():
             print("python sdk: server", init.serverInfo.name, init.serverInfo.version, "protocol", init.protocolVersion)
             tools = await s.list_tools(); print("tools", len(tools.tools))
             res = await s.call_tool("save_memory", {"threadId": os.environ["THREAD"], "type": "DECISION", "content": "Saved from the Python MCP SDK client"})
-            print("save_memory isError", res.isError)
+            if res.isError:
+                print("save_memory refused (expected with a read-only key):", res.content[0].text[:120])
+            else:
+                print("save_memory ok")
             ctx = await s.call_tool("get_thread_context", {"threadId": os.environ["THREAD"]})
-            print("decision visible:", "Python MCP SDK" in ctx.content[0].text)
+            print("thread context ok:", not ctx.isError, "| decision visible:", "Python MCP SDK" in ctx.content[0].text)
             rr = await s.read_resource("engram://workspace"); print("resource ok", os.environ.get("LIB_NAME", "Project Atlas") in rr.contents[0].text)
             p = await s.get_prompt("load_project_context", {"threadId": os.environ["THREAD"]}); print("prompt ok", os.environ["THREAD"] in p.messages[0].content.text)
             if os.environ.get("AGENT"):
