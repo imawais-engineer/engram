@@ -248,9 +248,14 @@ Project: `6ae5ea70000968dca787` in Frankfurt (`https://fra.cloud.appwrite.io/v1`
 
 Mobile (390 px): [landing](docs/screenshots/10-mobile-landing.png) · [overview](docs/screenshots/09-mobile-overview.png) · [thread](docs/screenshots/08-mobile-thread.png)
 
-**Visual language:** plum `#1F0A2E` ground, cream `#F6EFE6` text, pink `#FF4D8D` actions (dark plum text on pink, 5.9:1),
-violet `#7A3FA8` surfaces, lilac `#C9A6DE` mono labels (8.8:1 on plum), panel `#250D37` bands. Space Grotesk poster headlines and
-JetBrains Mono labels via `next/font`. Single column under 900 px.
+**Visual language: deep space glass.** Near-black navy ground (`#05060F` → `#070818` → `#0A0B24`) with fixed
+radial nebula glows in violet `rgba(124,92,255,.28)`, cyan `rgba(34,211,238,.14)`, magenta `rgba(232,121,249,.12)` and
+indigo `rgba(91,108,255,.16)`, plus a pure-CSS star field (no image assets). Panels are translucent glass: a
+`rgba(255,255,255,.065 → .025)` fill, `backdrop-filter: blur(16px)`, a 1px `rgba(184,181,255,.13)` border and a soft violet glow.
+Primary actions use a lilac → indigo → cyan gradient (`#C4B5FD` → `#A5B4FC` → `#67E8F9`) with dark `#070818` text
+(10:1 or better). Text is `#EEF0FF` (17.5:1 on the ground), mono labels lilac `#B8B5FF` (10.5:1), muted text `#9097C4` (7:1).
+Headlines in Sora, UI text in Plus Jakarta Sans and labels in Geist Mono, all via `next/font`. Every colour is a CSS
+variable or Tailwind theme token in `src/app/globals.css`. Single column under 900 px.
 
 ## Limits and honest notes
 
