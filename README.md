@@ -4,8 +4,7 @@ Engram is a memory layer that you own, built on **Appwrite**. You keep your docu
 place. Any MCP client you connect, such as Claude Code, MCP Inspector or your own agent, can search that context and add to it
 through **one password-protected MCP endpoint**.
 
-**Live:** https://engram-mcp.vercel.app · **MCP endpoint:** `https://engram-mcp.vercel.app/mcp`
-(also served at https://notemind-nine.vercel.app, the project's original name)
+**Live (Appwrite Sites):** https://engram-ai.appwrite.network · **MCP endpoint:** `https://engram-ai.appwrite.network/mcp`
 
 > Built for the Appwrite Databases Hackathon (Oct 2026). Built with Appwrite **TablesDB**, Auth, Storage and Embeddings.
 
@@ -35,7 +34,7 @@ own key sees it right away through `get_thread_context`.
  MCP clients (Claude Code, Inspector, SDKs, …)       Browser dashboard
             │  POST /mcp  (Bearer eng_…)                  │ httpOnly Appwrite session cookie
             ▼                                             ▼
- ┌──────────────────────────── Next.js 16 on Vercel ────────────────────────────┐
+ ┌──────────────────────── Next.js 16 on Appwrite Sites ────────────────────────┐
  │  /mcp  stateless Streamable HTTP (MCP TS SDK 1.32)    /api/*  route handlers │
  │   └ key auth → scope check → tool → activity log       └ requireUser()       │
  │                 lib/: libraries · threads · keys · vector-store (interface)  │
@@ -130,12 +129,12 @@ doesn't implement OAuth, only bearer keys, so Inspector shows `auth_required` fo
 
 ```bash
 # Claude Code (tested)
-claude mcp add --transport http engram https://engram-mcp.vercel.app/mcp --header "Authorization: Bearer eng_…"
+claude mcp add --transport http engram https://engram-ai.appwrite.network/mcp --header "Authorization: Bearer eng_…"
 ```
 
 ```jsonc
 // Cursor ~/.cursor/mcp.json (format from Cursor docs, untested)
-{ "mcpServers": { "engram": { "url": "https://engram-mcp.vercel.app/mcp", "headers": { "Authorization": "Bearer eng_…" } } } }
+{ "mcpServers": { "engram": { "url": "https://engram-ai.appwrite.network/mcp", "headers": { "Authorization": "Bearer eng_…" } } } }
 ```
 
 ## Security model
@@ -170,7 +169,11 @@ BASE=http://localhost:3000 node --env-file=.env.local scripts/acceptance.mjs   #
 BASE=http://localhost:3000 node scripts/seed-demo.mjs                          # demo workspace → DEMO_ACCOUNT.txt
 ```
 
-Deploy: `vercel deploy --prod` with `APPWRITE_API_KEY` set as a server-only env var.
+Deploy: **Appwrite Sites**, connected to this repo's `main` branch, so every push builds and activates a deployment.
+Site settings: framework `nextjs`, adapter `ssr`, build runtime `node-24`, install `npm install`, build `npm run build`,
+output `./.next`, request timeout 60 s (the Sites maximum). Site variables: `NEXT_PUBLIC_APPWRITE_ENDPOINT`,
+`NEXT_PUBLIC_APPWRITE_PROJECT_ID`, `APPWRITE_DATABASE_ID`, `APPWRITE_BUCKET_ID` and `APPWRITE_API_KEY` (marked secret).
+Project: `6ae5ea70000968dca787` in Frankfurt (`https://fra.cloud.appwrite.io/v1`).
 
 ## Screenshots
 
@@ -190,7 +193,7 @@ JetBrains Mono labels via `next/font`. Single column under 900 px.
 ## Limits and honest notes
 
 - VectorsDB needs a paid dedicated instance on this project, so Engram uses TablesDB (see above).
-- Documents are indexed inside the upload request (up to 300 s on Vercel). There is no background queue. Each document is
+- Documents are indexed inside the upload request, which Appwrite Sites caps at 60 s. There is no background queue. Each document is
   limited to 10 MB and 400 chunks.
 - The rate limit is held in memory, per serverless instance. It isn't global.
 - Bearer keys only. There is no OAuth flow, so hosted connectors that require OAuth (e.g. claude.ai custom connectors) can't use Engram directly.

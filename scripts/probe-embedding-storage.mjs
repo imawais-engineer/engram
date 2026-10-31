@@ -1,7 +1,7 @@
 // Verifies 768-dim embeddings round-trip through a TablesDB longtext column and reports sizes.
 // Usage: APPWRITE_API_KEY=... node scripts/probe-embedding-storage.mjs
 import { Client, TablesDB, Embeddings, ID, Query } from 'node-appwrite';
-const c = new Client().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://sfo.cloud.appwrite.io/v1').setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6a5788c00031e7384f3b').setKey(process.env.APPWRITE_API_KEY);
+const c = new Client().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1').setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6ae5ea70000968dca787').setKey(process.env.APPWRITE_API_KEY);
 const db = new TablesDB(c), DB = process.env.APPWRITE_DATABASE_ID || 'notemind';
 const text = 'search_document: ' + 'Riders queue status updates offline and sync when the network returns. '.repeat(12);
 const [e] = (await new Embeddings(c).createTextEmbeddings({ texts: [text.slice(0, 900)] })).embeddings;

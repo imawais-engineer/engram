@@ -2,8 +2,8 @@ import "server-only";
 import { cookies } from "next/headers";
 import { Account, Client, Embeddings, Storage, TablesDB, Users } from "node-appwrite";
 
-export const ENDPOINT = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "https://sfo.cloud.appwrite.io/v1";
-export const PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "6a5788c00031e7384f3b";
+export const ENDPOINT = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT ?? "https://fra.cloud.appwrite.io/v1";
+export const PROJECT_ID = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "6ae5ea70000968dca787";
 export const DATABASE_ID = process.env.APPWRITE_DATABASE_ID ?? "notemind";
 export const NOTES_TABLE_ID = process.env.APPWRITE_NOTES_TABLE_ID ?? "notes";
 export const BUCKET_ID = process.env.APPWRITE_BUCKET_ID ?? "documents";

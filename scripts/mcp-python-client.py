@@ -3,7 +3,7 @@
 import asyncio, os
 from mcp import ClientSession
 from mcp.client.streamable_http import streamablehttp_client
-URL = os.environ.get("MCP_URL", "https://engram-mcp.vercel.app/mcp")
+URL = os.environ.get("MCP_URL", "https://engram-ai.appwrite.network/mcp")
 async def main():
     async with streamablehttp_client(URL, headers={"Authorization": f"Bearer {os.environ['TOKEN']}"}) as (r, w, _):
         async with ClientSession(r, w) as s:

@@ -6,7 +6,7 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import { Client, TablesDB, Users, Query } from 'node-appwrite';
 
 const BASE = process.env.BASE || 'http://localhost:3000';
-const admin = new Client().setEndpoint('https://sfo.cloud.appwrite.io/v1').setProject('6a5788c00031e7384f3b').setKey(process.env.APPWRITE_API_KEY);
+const admin = new Client().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1').setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6ae5ea70000968dca787').setKey(process.env.APPWRITE_API_KEY);
 const db = new TablesDB(admin), users = new Users(admin);
 let pass = 0, failed = 0;
 const created = [];

@@ -1,5 +1,5 @@
 // Seeds a demo workspace for recording: libraries, a thread with memories saved by two AI-tool keys.
-// Usage: BASE=https://engram-mcp.vercel.app node scripts/seed-demo.mjs   (writes DEMO_ACCOUNT.txt, which is gitignored)
+// Usage: BASE=https://engram-ai.appwrite.network node scripts/seed-demo.mjs   (writes DEMO_ACCOUNT.txt, which is gitignored)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { Client as McpClient } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';

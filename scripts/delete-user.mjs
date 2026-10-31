@@ -1,7 +1,7 @@
 // Deletes Engram users and all their rows/files. Usage: node scripts/delete-user.mjs <email-or-prefix>...
 // A trailing * matches by prefix (e.g. "accept-a+*").
 import { Client, TablesDB, Users, Storage, Query } from 'node-appwrite';
-const c = new Client().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://sfo.cloud.appwrite.io/v1').setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6a5788c00031e7384f3b').setKey(process.env.APPWRITE_API_KEY);
+const c = new Client().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1').setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6ae5ea70000968dca787').setKey(process.env.APPWRITE_API_KEY);
 const db = new TablesDB(c), users = new Users(c), storage = new Storage(c), DB = process.env.APPWRITE_DATABASE_ID || 'notemind';
 for (const pat of process.argv.slice(2)) {
   const q = pat.endsWith('*') ? [Query.startsWith('email', pat.slice(0, -1)), Query.limit(100)] : [Query.equal('email', pat)];

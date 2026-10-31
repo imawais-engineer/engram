@@ -3,8 +3,8 @@
 // Safe to re-run: existing resources return 409 and are skipped.
 import { Client, TablesDB, Storage, Embeddings, Permission, Role, TablesDBIndexType, OrderBy } from 'node-appwrite';
 
-const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://sfo.cloud.appwrite.io/v1';
-const project = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6a5788c00031e7384f3b';
+const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://fra.cloud.appwrite.io/v1';
+const project = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '6ae5ea70000968dca787';
 const key = process.env.APPWRITE_API_KEY;
 if (!key) throw new Error('APPWRITE_API_KEY is required');
 const DB = process.env.APPWRITE_DATABASE_ID || 'notemind';
